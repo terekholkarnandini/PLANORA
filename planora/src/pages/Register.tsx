@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import AuthVisual from '../components/AuthVisual'
 import AuthInput from '../components/AuthInput'
 import '../styles/AuthOnboarding.css'
+import { supabase } from '../lib/supabaseClient'
 
 const Register: React.FC = () => {
   const navigate = useNavigate()
@@ -56,12 +57,29 @@ const Register: React.FC = () => {
     }
   }
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setError('')
 
-    if (!fullName || !email || !password || !confirmPassword) {
+    // --- Validations ---
+    if (!fullName.trim() || !email.trim() || !password || !confirmPassword) {
       setError('PLEASE FILL IN ALL REQUIRED FIELDS.')
+      return
+    }
+
+    if (fullName.trim().length < 2) {
+      setError('FULL NAME MUST BE AT LEAST 2 CHARACTERS.')
+      return
+    }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+    if (!emailRegex.test(email.trim())) {
+      setError('PLEASE ENTER A VALID EMAIL ADDRESS.')
+      return
+    }
+
+    if (password.length < 8) {
+      setError('PASSWORD MUST BE AT LEAST 8 CHARACTERS.')
       return
     }
 
@@ -76,12 +94,34 @@ const Register: React.FC = () => {
     }
 
     setLoading(true)
-    // Simulate API registration call
-    setTimeout(() => {
-      setLoading(false)
-      localStorage.setItem('planora_user', JSON.stringify({ fullName, email }))
+    try {
+      const { error: signUpError } = await supabase.auth.signUp({
+        email: email.trim(),
+        password,
+        options: {
+          data: { full_name: fullName.trim() },
+        },
+      })
+
+      if (signUpError) {
+        setError(signUpError.message.toUpperCase())
+        return
+      }
+
+      // Fire-and-forget welcome email — do not await so it never blocks navigation
+      const backendUrl = import.meta.env.VITE_BACKEND_URL ?? 'http://localhost:8000'
+      fetch(`${backendUrl}/emails/welcome`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: email.trim(), name: fullName.trim() }),
+      }).catch(() => {/* silently ignore email errors */})
+
       navigate('/onboarding')
-    }, 1000)
+    } catch {
+      setError('AN UNEXPECTED ERROR OCCURRED. PLEASE TRY AGAIN.')
+    } finally {
+      setLoading(false)
+    }
   }
 
   return (
