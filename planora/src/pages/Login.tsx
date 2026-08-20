@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import AuthVisual from '../components/AuthVisual'
 import AuthInput from '../components/AuthInput'
 import '../styles/AuthOnboarding.css'
+import { supabase } from '../lib/supabaseClient'
 
 const Login: React.FC = () => {
   const navigate = useNavigate()
@@ -12,33 +13,66 @@ const Login: React.FC = () => {
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setError('')
 
-    if (!email || !password) {
+    // --- Validations ---
+    if (!email.trim() || !password) {
       setError('PLEASE FILL IN ALL REQUIRED FIELDS.')
       return
     }
 
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+    if (!emailRegex.test(email.trim())) {
+      setError('PLEASE ENTER A VALID EMAIL ADDRESS.')
+      return
+    }
+
+    if (password.length < 6) {
+      setError('PASSWORD MUST BE AT LEAST 6 CHARACTERS.')
+      return
+    }
+
     setLoading(true)
-    // Simulate API sign-in call
-    setTimeout(() => {
-      setLoading(false)
-      // Save simulated session details
-      localStorage.setItem('planora_user', JSON.stringify({ email, rememberMe }))
-      // Redirect to onboarding
+    try {
+      const { error: signInError } = await supabase.auth.signInWithPassword({
+        email: email.trim(),
+        password,
+      })
+
+      if (signInError) {
+        setError(signInError.message.toUpperCase())
+        return
+      }
+
       navigate('/onboarding')
-    }, 1000)
+    } catch {
+      setError('AN UNEXPECTED ERROR OCCURRED. PLEASE TRY AGAIN.')
+    } finally {
+      setLoading(false)
+    }
   }
 
-  const handleGoogleLogin = () => {
+  const handleForgotPassword = async (e: React.MouseEvent) => {
+    e.preventDefault()
+    if (!email.trim()) {
+      setError('PLEASE ENTER YOUR EMAIL ADDRESS FIRST.')
+      return
+    }
+    const { error } = await supabase.auth.resetPasswordForEmail(email.trim())
+    if (error) {
+      setError(error.message.toUpperCase())
+    } else {
+      setError('PASSWORD RESET EMAIL SENT — CHECK YOUR INBOX.')
+    }
+  }
+
+  const handleGoogleLogin = async () => {
     setLoading(true)
-    setTimeout(() => {
-      setLoading(false)
-      localStorage.setItem('planora_user', JSON.stringify({ email: 'google.user@gmail.com', provider: 'google' }))
-      navigate('/onboarding')
-    }, 800)
+    const { error } = await supabase.auth.signInWithOAuth({ provider: 'google' })
+    if (error) setError(error.message.toUpperCase())
+    setLoading(false)
   }
 
   return (
@@ -92,7 +126,7 @@ const Login: React.FC = () => {
                 REMEMBER ME
               </label>
 
-              <a href="#forgot" className="forgot-password-link" onClick={(e) => { e.preventDefault(); alert('Simulated password reset email sent!'); }}>
+              <a href="#forgot" className="forgot-password-link" onClick={handleForgotPassword}>
                 FORGOT PASSWORD?
               </a>
             </div>
