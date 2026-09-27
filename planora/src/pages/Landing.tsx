@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
+import ArchitectureScene from '../components/ArchitectureScene'
 import '../App.css'
 
 function Landing() {
@@ -92,6 +93,71 @@ function Landing() {
         <div className="stars" />
         <div className="ambient-glow glow-one" />
         <div className="ambient-glow glow-two" />
+
+        {/* FLOATING 2D CARD */}
+<div className="hero-float-card hero-float-left">
+
+  <div className="float-card-header">
+    <span className="float-icon">⌗</span>
+    <span>2D FLOOR PLAN</span>
+  </div>
+
+  <div className="mini-floor-plan">
+
+    <div className="mini-room mini-bed">
+      <span>BED</span>
+    </div>
+
+    <div className="mini-room mini-bath">
+      <span>BATH</span>
+    </div>
+
+    <div className="mini-room mini-living">
+      <span>LIVING</span>
+    </div>
+
+    <div className="mini-room mini-kitchen">
+      <span>KITCHEN</span>
+    </div>
+
+  </div>
+
+  <div className="float-card-status">
+    <span className="float-status-dot" />
+    LAYOUT GENERATED
+  </div>
+
+</div>
+
+
+{/* FLOATING 3D CARD */}
+<div className="hero-float-card hero-float-right">
+
+  <div className="float-card-header">
+    <span className="float-cube">◇</span>
+    <span>3D SPACE</span>
+  </div>
+
+  <div className="mini-house">
+
+    <div className="mini-house-roof" />
+
+    <div className="mini-house-body">
+
+      <span className="mini-window mini-window-left" />
+      <span className="mini-door" />
+      <span className="mini-window mini-window-right" />
+
+    </div>
+
+  </div>
+
+  <div className="float-card-status">
+    <span className="float-status-dot live" />
+    INTERACTIVE MODEL
+  </div>
+
+</div>
 
         <div className="coordinate coordinate-one">
           <span>40.7128° N</span>
@@ -382,7 +448,220 @@ function Landing() {
         </div>
 
       </section>
-      
+      {/* ==================================================
+    2D → 3D TRANSFORMATION
+================================================== */}
+
+<section className="transform-section" id="technology">
+
+  <div className="transform-header">
+
+    <div className="transform-index">
+      <span>03</span>
+      <small>PLANORA / TRANSFORMATION</small>
+    </div>
+
+    <div>
+      <span className="transform-eyebrow">
+        FROM PLAN TO SPACE
+      </span>
+
+      <h2>
+        SEE IT IN 2D.
+        <br />
+        <em>EXPERIENCE IT IN 3D.</em>
+      </h2>
+    </div>
+
+    <p>
+      Planora transforms a generated floor plan into an
+      interactive spatial model — giving you a clearer
+      understanding of your design before it is built.
+    </p>
+
+  </div>
+
+
+  <div className="transform-workspace">
+
+    {/* =====================
+        2D SIDE
+    ====================== */}
+
+    <div className="transform-panel">
+
+      <div className="panel-top">
+
+        <div>
+          <span className="panel-status-dot" />
+          2D FLOOR PLAN
+        </div>
+
+        <span>PLAN / 004</span>
+
+      </div>
+
+
+      <div className="plan-preview">
+
+        <div className="plan-grid" />
+
+<div className="generated-plan">
+
+  <div className="generated-room plan-bedroom-one">
+    <span>BEDROOM</span>
+  </div>
+
+  <div className="generated-room plan-bathroom">
+    <span>BATH</span>
+  </div>
+
+  <div className="generated-room plan-kitchen">
+    <span>KITCHEN</span>
+  </div>
+
+  <div className="generated-room plan-living">
+    <span>LIVING ROOM</span>
+  </div>
+
+  <div className="generated-room plan-bedroom-two">
+    <span>BEDROOM</span>
+  </div>
+
+</div>
+
+        <span className="preview-label preview-label-top">
+          GENERATED PLAN
+        </span>
+
+        <span className="preview-label preview-label-bottom">
+          1200 SQ.FT.
+        </span>
+
+      </div>
+
+
+      <div className="panel-bottom">
+
+        <div>
+          <small>TYPE</small>
+          <strong>RESIDENTIAL</strong>
+        </div>
+
+        <div>
+          <small>BEDROOMS</small>
+          <strong>03</strong>
+        </div>
+
+        <div>
+          <small>BATHROOMS</small>
+          <strong>02</strong>
+        </div>
+
+      </div>
+
+    </div>
+
+
+
+    {/* =====================
+        CENTER ARROW
+    ====================== */}
+
+    <div className="transform-middle">
+
+      <span>TRANSFORM</span>
+
+      <div className="transform-arrow">
+        →
+      </div>
+
+      <small>2D → 3D</small>
+
+    </div>
+
+
+
+    {/* =====================
+        3D SIDE
+    ====================== */}
+
+    <div className="transform-panel transform-panel-3d">
+
+      <div className="panel-top">
+
+        <div>
+          <span className="panel-status-dot live" />
+          LIVE 3D MODEL
+        </div>
+
+        <span>INTERACTIVE</span>
+
+      </div>
+
+
+      <div className="house-preview">
+
+        <ArchitectureScene />
+
+        <div className="house-preview-glow" />
+
+        <span className="preview-label preview-label-top">
+          SPATIAL MODEL
+        </span>
+
+        <span className="preview-label preview-label-bottom">
+          DRAG TO ROTATE
+        </span>
+
+      </div>
+
+
+      <div className="panel-bottom">
+
+        <div>
+          <small>VIEW</small>
+          <strong>3D SPACE</strong>
+        </div>
+
+        <div>
+          <small>MODEL</small>
+          <strong>REAL-TIME</strong>
+        </div>
+
+        <div>
+          <small>CONTROL</small>
+          <strong>INTERACTIVE</strong>
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+
+  <div className="transform-caption">
+
+    <span>
+      01 / GENERATE
+    </span>
+
+    <div />
+
+    <span>
+      02 / TRANSFORM
+    </span>
+
+    <div />
+
+    <span>
+      03 / EXPLORE
+    </span>
+
+  </div>
+
+</section>
     </div>
   )
 }

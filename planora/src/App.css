@@ -1612,3 +1612,1167 @@ a {
   height: 100%;
   overflow: hidden;
 }
+/* =========================================================
+   PLANORA — 2D TO 3D TRANSFORMATION
+========================================================= */
+
+.transform-section {
+  position: relative;
+  padding: 120px 6vw 110px;
+  background:
+    radial-gradient(
+      circle at 68% 55%,
+      rgba(80, 210, 255, 0.055),
+      transparent 30%
+    ),
+    #07090b;
+  border-top: 1px solid rgba(255,255,255,.06);
+  overflow: hidden;
+}
+
+
+/* GRID BACKGROUND */
+
+.transform-section::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+
+  background-image:
+    linear-gradient(
+      rgba(255,255,255,.018) 1px,
+      transparent 1px
+    ),
+    linear-gradient(
+      90deg,
+      rgba(255,255,255,.018) 1px,
+      transparent 1px
+    );
+
+  background-size: 75px 75px;
+
+  pointer-events: none;
+}
+
+
+/* =========================
+   HEADER
+========================= */
+
+.transform-header {
+  position: relative;
+  z-index: 2;
+
+  max-width: 1400px;
+
+  margin: 0 auto 55px;
+
+  display: grid;
+
+  grid-template-columns:
+    120px
+    minmax(450px, 1fr)
+    300px;
+
+  gap: 45px;
+
+  align-items: end;
+}
+
+
+.transform-index {
+  align-self: start;
+
+  display: flex;
+  flex-direction: column;
+
+  gap: 8px;
+
+  font-family: 'DM Mono', monospace;
+}
+
+
+.transform-index span {
+  color: #7de7ff;
+  font-size: 11px;
+}
+
+
+.transform-index small {
+  color: rgba(255,255,255,.3);
+
+  font-size: 8px;
+
+  letter-spacing: .14em;
+}
+
+
+.transform-eyebrow {
+  display: block;
+
+  margin-bottom: 16px;
+
+  color: rgba(255,255,255,.35);
+
+  font-family: 'DM Mono', monospace;
+
+  font-size: 9px;
+
+  letter-spacing: .18em;
+}
+
+
+.transform-header h2 {
+  margin: 0;
+
+  color: #f3f5f5;
+
+  font-size: clamp(42px, 5vw, 76px);
+
+  line-height: .9;
+
+  letter-spacing: -.055em;
+
+  font-weight: 500;
+}
+
+
+.transform-header h2 em {
+  color: rgba(255,255,255,.28);
+
+  font-style: normal;
+
+  font-weight: 400;
+}
+
+
+.transform-header > p {
+  margin: 0 0 3px;
+
+  color: rgba(255,255,255,.42);
+
+  font-size: 12px;
+
+  line-height: 1.8;
+}
+
+
+/* =========================
+   WORKSPACE
+========================= */
+
+.transform-workspace {
+  position: relative;
+  z-index: 2;
+
+  max-width: 1400px;
+
+  margin: auto;
+
+  display: grid;
+
+  grid-template-columns:
+    minmax(0, 1fr)
+    100px
+    minmax(0, 1fr);
+
+  align-items: center;
+}
+
+
+/* =========================
+   PANELS
+========================= */
+
+.transform-panel {
+  min-width: 0;
+
+  border: 1px solid rgba(255,255,255,.09);
+
+  background: rgba(10,13,15,.85);
+
+  transition:
+    border-color .3s ease,
+    transform .3s ease;
+}
+
+
+.transform-panel:hover {
+  border-color: rgba(125,231,255,.25);
+}
+
+
+.panel-top {
+  height: 52px;
+
+  padding: 0 18px;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: space-between;
+
+  border-bottom:
+    1px solid rgba(255,255,255,.07);
+
+  color: rgba(255,255,255,.32);
+
+  font-family: 'DM Mono', monospace;
+
+  font-size: 8px;
+
+  letter-spacing: .12em;
+}
+
+
+.panel-top > div {
+  display: flex;
+
+  align-items: center;
+
+  gap: 9px;
+}
+
+
+.panel-status-dot {
+  width: 5px;
+
+  height: 5px;
+
+  border-radius: 50%;
+
+  background: rgba(255,255,255,.35);
+}
+
+
+.panel-status-dot.live {
+  background: #7de7ff;
+
+  box-shadow:
+    0 0 10px rgba(125,231,255,.8);
+}
+
+
+/* =========================
+   2D PLAN
+========================= */
+
+.plan-preview,
+.house-preview {
+  position: relative;
+
+  height: 430px;
+
+  overflow: hidden;
+
+  background:
+    radial-gradient(
+      circle at center,
+      rgba(255,255,255,.025),
+      transparent 55%
+    ),
+    #080b0d;
+}
+
+
+.plan-preview {
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  padding: 30px;
+}
+
+
+.plan-preview img {
+  position: relative;
+
+  z-index: 2;
+
+  width: 90%;
+
+  height: 90%;
+
+  object-fit: contain;
+
+  opacity: .88;
+
+  filter:
+    grayscale(.15)
+    contrast(1.05)
+    drop-shadow(
+      0 12px 35px rgba(0,0,0,.4)
+    );
+}
+
+
+.plan-grid {
+  position: absolute;
+
+  inset: 0;
+
+  opacity: .35;
+
+  background-image:
+    linear-gradient(
+      rgba(125,231,255,.035) 1px,
+      transparent 1px
+    ),
+    linear-gradient(
+      90deg,
+      rgba(125,231,255,.035) 1px,
+      transparent 1px
+    );
+
+  background-size: 35px 35px;
+}
+
+
+/* =========================
+   3D HOUSE
+========================= */
+
+.house-preview canvas {
+  position: relative;
+
+  z-index: 2;
+
+  width: 100% !important;
+
+  height: 100% !important;
+}
+
+
+.house-preview-glow {
+  position: absolute;
+
+  z-index: 0;
+
+  width: 350px;
+
+  height: 350px;
+
+  left: 50%;
+
+  top: 52%;
+
+  transform:
+    translate(-50%, -50%);
+
+  border-radius: 50%;
+
+  background:
+    rgba(80,210,255,.08);
+
+  filter: blur(80px);
+
+  pointer-events: none;
+}
+
+
+/* LABELS */
+
+.preview-label {
+  position: absolute;
+
+  z-index: 5;
+
+  color: rgba(255,255,255,.27);
+
+  font-family: 'DM Mono', monospace;
+
+  font-size: 7px;
+
+  letter-spacing: .15em;
+
+  pointer-events: none;
+}
+
+
+.preview-label-top {
+  top: 17px;
+
+  left: 18px;
+}
+
+
+.preview-label-bottom {
+  right: 18px;
+
+  bottom: 17px;
+
+  color: rgba(125,231,255,.6);
+}
+
+
+/* =========================
+   PANEL BOTTOM
+========================= */
+
+.panel-bottom {
+  min-height: 68px;
+
+  display: grid;
+
+  grid-template-columns:
+    repeat(3, 1fr);
+
+  border-top:
+    1px solid rgba(255,255,255,.07);
+}
+
+
+.panel-bottom > div {
+  padding: 14px 17px;
+
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 5px;
+
+  border-right:
+    1px solid rgba(255,255,255,.06);
+}
+
+
+.panel-bottom > div:last-child {
+  border-right: 0;
+}
+
+
+.panel-bottom small {
+  color: rgba(255,255,255,.23);
+
+  font-family: 'DM Mono', monospace;
+
+  font-size: 7px;
+
+  letter-spacing: .13em;
+}
+
+
+.panel-bottom strong {
+  color: rgba(255,255,255,.68);
+
+  font-size: 9px;
+
+  font-weight: 400;
+
+  letter-spacing: .05em;
+}
+
+
+/* =========================
+   CENTER TRANSFORM
+========================= */
+
+.transform-middle {
+  display: flex;
+
+  flex-direction: column;
+
+  align-items: center;
+
+  gap: 13px;
+
+  color: rgba(255,255,255,.25);
+
+  font-family: 'DM Mono', monospace;
+
+  font-size: 7px;
+
+  letter-spacing: .13em;
+}
+
+
+.transform-arrow {
+  width: 46px;
+
+  height: 46px;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  border:
+    1px solid rgba(125,231,255,.25);
+
+  border-radius: 50%;
+
+  color: #7de7ff;
+
+  font-size: 18px;
+
+  box-shadow:
+    0 0 30px rgba(125,231,255,.04);
+
+  transition:
+    background .3s ease,
+    transform .3s ease;
+}
+
+
+.transform-workspace:hover
+.transform-arrow {
+  background:
+    rgba(125,231,255,.06);
+
+  transform: translateX(3px);
+}
+
+
+.transform-middle small {
+  color: #7de7ff;
+
+  font-size: 7px;
+}
+
+
+/* =========================
+   BOTTOM PROCESS
+========================= */
+
+.transform-caption {
+  position: relative;
+
+  z-index: 2;
+
+  max-width: 650px;
+
+  margin: 45px auto 0;
+
+  display: flex;
+
+  align-items: center;
+
+  gap: 15px;
+}
+
+
+.transform-caption span {
+  flex-shrink: 0;
+
+  color: rgba(255,255,255,.27);
+
+  font-family: 'DM Mono', monospace;
+
+  font-size: 7px;
+
+  letter-spacing: .12em;
+}
+
+
+.transform-caption div {
+  width: 100%;
+
+  height: 1px;
+
+  background:
+    rgba(255,255,255,.08);
+}
+
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+
+@media (max-width: 1000px) {
+
+  .transform-header {
+    grid-template-columns:
+      80px
+      1fr;
+  }
+
+  .transform-header > p {
+    grid-column: 2;
+
+    max-width: 500px;
+  }
+
+  .transform-workspace {
+    grid-template-columns: 1fr;
+  }
+
+  .transform-middle {
+    height: 90px;
+
+    justify-content: center;
+  }
+
+  .transform-arrow {
+    transform: rotate(90deg);
+  }
+
+  .transform-workspace:hover
+  .transform-arrow {
+    transform:
+      rotate(90deg)
+      translateX(3px);
+  }
+}
+
+
+@media (max-width: 650px) {
+
+  .transform-section {
+    padding:
+      90px 5vw
+      80px;
+  }
+
+  .transform-header {
+    display: block;
+
+    margin-bottom: 40px;
+  }
+
+  .transform-index {
+    margin-bottom: 25px;
+  }
+
+  .transform-header h2 {
+    font-size: 13vw;
+  }
+
+  .transform-header > p {
+    margin-top: 25px;
+  }
+
+  .plan-preview,
+  .house-preview {
+    height: 330px;
+  }
+
+  .panel-bottom {
+    grid-template-columns: 1fr;
+  }
+
+  .panel-bottom > div {
+    border-right: 0;
+
+    border-bottom:
+      1px solid rgba(255,255,255,.05);
+  }
+
+  .transform-caption {
+    display: none;
+  }
+}
+
+.threeDPreviewContainer {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  inset: 0;
+}
+
+.threeDPreviewContainer canvas {
+  display: block;
+  width: 100% !important;
+  height: 100% !important;
+}
+
+/* =========================================================
+   HERO FLOATING 2D / 3D CARDS
+========================================================= */
+
+.hero-float-card {
+  position: absolute;
+  z-index: 4;
+
+  width: 205px;
+  padding: 18px;
+
+  border: 1px solid rgba(125, 231, 255, 0.16);
+  background:
+    linear-gradient(
+      145deg,
+      rgba(10, 19, 24, 0.88),
+      rgba(7, 12, 15, 0.78)
+    );
+
+  backdrop-filter: blur(12px);
+  border-radius: 3px;
+
+  box-shadow:
+    0 20px 60px rgba(0, 0, 0, 0.25),
+    inset 0 0 25px rgba(125, 231, 255, 0.015);
+
+  pointer-events: none;
+}
+
+
+/* LEFT / RIGHT POSITION */
+
+.hero-float-left {
+  left: 4.5vw;
+  top: 51%;
+
+  animation: planoraFloatLeft 7s ease-in-out infinite;
+}
+
+
+.hero-float-right {
+  right: 4.5vw;
+  top: 43%;
+
+  animation: planoraFloatRight 8s ease-in-out infinite;
+}
+
+
+/* CARD HEADER */
+
+.float-card-header {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+
+  margin-bottom: 16px;
+
+  color: #7de7ff;
+
+  font-family: 'DM Mono', monospace;
+  font-size: 8px;
+
+  letter-spacing: 0.14em;
+}
+
+
+.float-icon,
+.float-cube {
+  font-size: 15px;
+  color: #7de7ff;
+}
+
+
+/* =========================================================
+   MINI 2D FLOOR PLAN
+========================================================= */
+
+.mini-floor-plan {
+  height: 125px;
+
+  padding: 8px;
+
+  display: grid;
+
+  grid-template-columns: 1.4fr 0.8fr;
+  grid-template-rows: 1fr 1.15fr;
+
+  gap: 5px;
+
+  border: 1px solid rgba(125, 231, 255, 0.14);
+
+  background:
+    linear-gradient(
+      rgba(125, 231, 255, 0.035) 1px,
+      transparent 1px
+    ),
+    linear-gradient(
+      90deg,
+      rgba(125, 231, 255, 0.035) 1px,
+      transparent 1px
+    );
+
+  background-size: 15px 15px;
+}
+
+
+.mini-room {
+  position: relative;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border: 1px solid rgba(125, 231, 255, 0.65);
+
+  color: rgba(125, 231, 255, 0.75);
+
+  font-family: 'DM Mono', monospace;
+
+  font-size: 6px;
+
+  letter-spacing: 0.08em;
+}
+
+
+.mini-bed {
+  grid-column: 1;
+  grid-row: 1;
+}
+
+
+.mini-bath {
+  grid-column: 2;
+  grid-row: 1;
+}
+
+
+.mini-living {
+  grid-column: 1;
+  grid-row: 2;
+}
+
+
+.mini-kitchen {
+  grid-column: 2;
+  grid-row: 2;
+}
+
+
+/* =========================================================
+   MINI 3D HOUSE
+========================================================= */
+
+.mini-house {
+  position: relative;
+
+  height: 125px;
+
+  border: 1px solid rgba(125, 231, 255, 0.08);
+
+  background:
+    radial-gradient(
+      circle at center,
+      rgba(125, 231, 255, 0.04),
+      transparent 65%
+    );
+}
+
+
+.mini-house-body {
+  position: absolute;
+
+  width: 112px;
+  height: 60px;
+
+  left: 50%;
+  top: 53%;
+
+  transform:
+    translate(-50%, -50%)
+    skewY(-2deg);
+
+  border: 1px solid rgba(125, 231, 255, 0.72);
+}
+
+
+.mini-house-roof {
+  position: absolute;
+
+  width: 87px;
+  height: 87px;
+
+  left: 50%;
+  top: 18%;
+
+  transform:
+    translateX(-50%)
+    rotate(30deg)
+    skew(-15deg);
+
+  border-top: 1px solid rgba(125, 231, 255, 0.75);
+  border-left: 1px solid rgba(125, 231, 255, 0.75);
+}
+
+
+.mini-window,
+.mini-door {
+  position: absolute;
+  bottom: 10px;
+
+  border: 1px solid rgba(125, 231, 255, 0.7);
+}
+
+
+.mini-window {
+  width: 21px;
+  height: 23px;
+}
+
+
+.mini-window-left {
+  left: 13px;
+}
+
+
+.mini-window-right {
+  right: 13px;
+}
+
+
+.mini-door {
+  width: 22px;
+  height: 38px;
+
+  left: 50%;
+
+  transform: translateX(-50%);
+}
+
+
+/* STATUS */
+
+.float-card-status {
+  margin-top: 13px;
+
+  display: flex;
+  align-items: center;
+
+  gap: 8px;
+
+  color: rgba(255, 255, 255, 0.3);
+
+  font-family: 'DM Mono', monospace;
+
+  font-size: 7px;
+
+  letter-spacing: 0.08em;
+}
+
+
+.float-status-dot {
+  width: 5px;
+  height: 5px;
+
+  border-radius: 50%;
+
+  background: #7de7ff;
+
+  box-shadow:
+    0 0 9px rgba(125, 231, 255, 0.7);
+}
+
+
+.float-status-dot.live {
+  animation: planoraPulse 2s ease-in-out infinite;
+}
+
+
+/* =========================================================
+   ANIMATION
+========================================================= */
+
+@keyframes planoraFloatLeft {
+
+  0%,
+  100% {
+    transform:
+      translateY(-50%)
+      rotate(-0.6deg);
+  }
+
+  50% {
+    transform:
+      translateY(calc(-50% - 10px))
+      rotate(0.4deg);
+  }
+}
+
+
+@keyframes planoraFloatRight {
+
+  0%,
+  100% {
+    transform:
+      translateY(-50%)
+      rotate(0.5deg);
+  }
+
+  50% {
+    transform:
+      translateY(calc(-50% + 9px))
+      rotate(-0.4deg);
+  }
+}
+
+
+@keyframes planoraPulse {
+
+  0%,
+  100% {
+    opacity: 0.5;
+  }
+
+  50% {
+    opacity: 1;
+  }
+}
+
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+
+@media (max-width: 1200px) {
+
+  .hero-float-card {
+    width: 185px;
+  }
+
+ .hero-float-left {
+  left: 4vw;
+  top: 48%;
+}
+
+.hero-float-right {
+  right: 4vw;
+  top: 40%;
+}
+
+}
+
+
+@media (max-width: 900px) {
+
+  .hero-float-card {
+    display: none;
+  }
+
+}
+
+/* =========================================================
+   GENERATED 2D PLAN
+========================================================= */
+
+.generated-plan {
+  position: relative;
+  z-index: 2;
+
+  width: 82%;
+  height: 78%;
+
+  display: grid;
+
+  grid-template-columns: 1.25fr 0.75fr 1.1fr;
+  grid-template-rows: 1fr 1fr;
+
+  gap: 8px;
+}
+
+
+/* ROOMS */
+
+.generated-room {
+  position: relative;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border: 1px solid rgba(125, 231, 255, 0.72);
+
+  background:
+    rgba(125, 231, 255, 0.018);
+
+  color: rgba(125, 231, 255, 0.72);
+
+  font-family: 'DM Mono', monospace;
+
+  font-size: 8px;
+  letter-spacing: 0.12em;
+
+  transition:
+    background 0.25s ease,
+    border-color 0.25s ease;
+}
+
+
+.generated-room:hover {
+  background: rgba(125, 231, 255, 0.05);
+  border-color: #7de7ff;
+}
+
+
+/* TOP ROW */
+
+.plan-bedroom-one {
+  grid-column: 1;
+  grid-row: 1;
+}
+
+.plan-bathroom {
+  grid-column: 2;
+  grid-row: 1;
+}
+
+.plan-kitchen {
+  grid-column: 3;
+  grid-row: 1;
+}
+
+
+/* BOTTOM ROW */
+
+.plan-living {
+  grid-column: 1 / 3;
+  grid-row: 2;
+}
+
+.plan-bedroom-two {
+  grid-column: 3;
+  grid-row: 2;
+}
+
+
+/* SMALL ARCHITECTURAL DETAILS */
+
+.generated-room::before,
+.generated-room::after {
+  content: "";
+  position: absolute;
+
+  background: #080b0d;
+}
+
+
+/* little doorway break */
+
+.generated-room::before {
+  width: 24px;
+  height: 3px;
+
+  bottom: -2px;
+  right: 15%;
+}
+
+
+/* doorway marker */
+
+.generated-room::after {
+  width: 1px;
+  height: 15px;
+
+  bottom: 0;
+  right: calc(15% + 23px);
+
+  background:
+    rgba(125, 231, 255, 0.35);
+
+  transform-origin: bottom;
+  transform: rotate(45deg);
+}
+
+
+/* MOBILE */
+
+@media (max-width: 650px) {
+
+  .generated-plan {
+    width: 90%;
+    height: 75%;
+  }
+
+  .generated-room {
+    font-size: 6px;
+  }
+
+}
