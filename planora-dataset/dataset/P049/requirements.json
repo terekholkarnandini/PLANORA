@@ -1,0 +1,16 @@
+{
+  "id": "P049",
+  "plot": {
+    "width": 25,
+    "length": 40,
+    "unit": "ft"
+  },
+  "rooms": {
+    "bedrooms": 2,
+    "bathrooms": 2,
+    "kitchen": 1,
+    "living_room": 1,
+    "balcony": 1,
+    "dining_room": 1
+  }
+}

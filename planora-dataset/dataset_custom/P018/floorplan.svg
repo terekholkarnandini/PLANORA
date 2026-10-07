@@ -1,0 +1,406 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 990" width="600" height="990" style="background-color: #FAFAFA; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;">
+  <defs>
+    <!-- Drop Shadows -->
+    <filter id="card-shadow" x="-5%" y="-5%" width="110%" height="110%" filterUnits="userSpaceOnUse">
+      <feDropShadow dx="0" dy="2" stdDeviation="3" flood-color="#000000" flood-opacity="0.04" />
+    </filter>
+    <!-- Dimension Arrow Marker -->
+    <marker id="arrow" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 2 L 10 5 L 0 8 z" fill="#64748B" />
+    </marker>
+  </defs>
+  <!-- Header Block -->
+  <g id="header" transform="translate(0, 0)">
+    <!-- Top Accent Bar -->
+    <rect x="0" y="0" width="600.0" height="5" fill="#2563EB" />
+    
+    <!-- Title & Brand -->
+    <text x="60.0" y="38" font-size="16" font-weight="800" letter-spacing="1.5" fill="#0F172A">
+      PLANORA <tspan fill="#2563EB">STUDIO</tspan>
+    </text>
+    <text x="60.0" y="56" font-size="11" font-weight="600" letter-spacing="0.5" fill="#64748B">
+      RESIDENTIAL ARCHITECTURAL FLOOR PLAN • 30' × 50' (1500 SQ FT)
+    </text>
+
+    <!-- Plan ID Badge -->
+    <rect x="450.0" y="22" width="90" height="28" rx="6" fill="#EFF6FF" stroke="#BFDBFE" stroke-width="1.2" />
+    <text x="495.0" y="41" font-size="12" font-weight="700" fill="#1D4ED8" text-anchor="middle">
+      P018
+    </text>
+    
+    <!-- Subtitle specs -->
+    <text x="60.0" y="80" font-size="11" font-weight="500" fill="#475569">
+      Config: <tspan font-weight="700" fill="#0F172A">2 Bed • 1 Bath • Living • Kitchen</tspan> | Type: Compact Urban Row House
+    </text>
+  </g>
+  <!-- Plot Boundary Background -->
+  <rect x="60.0" y="100.0" width="480.0" height="800.0" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="1.5" stroke-dasharray="4,4" rx="4" />
+  <!-- Room: Parking -->
+  <g id="room_parking">
+    <rect x="380.0" y="644.0" width="160.0" height="256.0" 
+          fill="#F1F5F9" stroke="#1E293B" stroke-width="2.5" />
+  </g>
+  <!-- Room: Living Room -->
+  <g id="room_living_room">
+    <rect x="60.0" y="644.0" width="320.0" height="256.0" 
+          fill="#FFFBEB" stroke="#1E293B" stroke-width="2.5" />
+  </g>
+  <!-- Room: Dining Room -->
+  <g id="room_dining_room">
+    <rect x="348.0" y="484.0" width="192.0" height="160.0" 
+          fill="#FEF3C7" stroke="#1E293B" stroke-width="2.5" />
+  </g>
+  <!-- Room: Kitchen -->
+  <g id="room_kitchen">
+    <rect x="180.0" y="484.0" width="168.0" height="160.0" 
+          fill="#ECFDF5" stroke="#1E293B" stroke-width="2.5" />
+  </g>
+  <!-- Room: Bathroom 2 -->
+  <g id="room_bathroom_2">
+    <rect x="60.0" y="484.0" width="120.0" height="160.0" 
+          fill="#F0F9FF" stroke="#1E293B" stroke-width="2.5" />
+  </g>
+  <!-- Room: Bedroom 3 -->
+  <g id="room_bedroom_3">
+    <rect x="300.0" y="292.0" width="240.0" height="192.0" 
+          fill="#EEF2FF" stroke="#1E293B" stroke-width="2.5" />
+  </g>
+  <!-- Room: Bedroom 2 -->
+  <g id="room_bedroom_2">
+    <rect x="60.0" y="292.0" width="240.0" height="192.0" 
+          fill="#EEF2FF" stroke="#1E293B" stroke-width="2.5" />
+  </g>
+  <!-- Room: Bedroom 1 -->
+  <g id="room_bedroom_1">
+    <rect x="252.0" y="100.0" width="288.0" height="192.0" 
+          fill="#EEF2FF" stroke="#1E293B" stroke-width="2.5" />
+  </g>
+  <!-- Room: Bathroom 1 -->
+  <g id="room_bathroom_1">
+    <rect x="60.0" y="180.0" width="192.0" height="112.0" 
+          fill="#F0F9FF" stroke="#1E293B" stroke-width="2.5" />
+  </g>
+  <!-- Room: Balcony -->
+  <g id="room_balcony">
+    <rect x="60.0" y="100.0" width="192.0" height="80.0" 
+          fill="#F0FDFA" stroke="#1E293B" stroke-width="2.5" />
+  </g>
+  <!-- Labels for Parking -->
+  <g id="labels_parking" pointer-events="none">
+    <g transform="translate(450.0, 752.0)" opacity="0.45">
+              <rect x="3" y="2" width="14" height="14" rx="2" fill="none" stroke="#334155" stroke-width="1.3" />
+              <text x="10" y="13" font-size="11" font-weight="800" fill="#334155" text-anchor="middle">P</text>
+            </g>
+    <text x="460.0" y="776.0" font-size="12" font-weight="700" fill="#0F172A" text-anchor="middle" letter-spacing="0.5">
+      PARKING
+    </text>
+    <text x="460.0" y="791.0" font-size="10.5" font-weight="600" fill="#475569" text-anchor="middle">
+      10' × 16'
+    </text>
+    <text x="460.0" y="804.0" font-size="9" font-weight="500" fill="#94A3B8" text-anchor="middle">
+      (160 sq ft)
+    </text>
+  </g>
+  <!-- Labels for Living Room -->
+  <g id="labels_living_room" pointer-events="none">
+    <g transform="translate(210.0, 752.0)" opacity="0.45">
+              <rect x="2" y="6" width="16" height="8" rx="2" fill="none" stroke="#92400E" stroke-width="1.3" />
+              <rect x="4" y="2" width="12" height="5" rx="1" fill="none" stroke="#92400E" stroke-width="1" />
+            </g>
+    <text x="220.0" y="776.0" font-size="12" font-weight="700" fill="#0F172A" text-anchor="middle" letter-spacing="0.5">
+      LIVING ROOM
+    </text>
+    <text x="220.0" y="791.0" font-size="10.5" font-weight="600" fill="#475569" text-anchor="middle">
+      20' × 16'
+    </text>
+    <text x="220.0" y="804.0" font-size="9" font-weight="500" fill="#94A3B8" text-anchor="middle">
+      (320 sq ft)
+    </text>
+  </g>
+  <!-- Labels for Dining Room -->
+  <g id="labels_dining_room" pointer-events="none">
+    <g transform="translate(434.0, 544.0)" opacity="0.45">
+              <circle cx="10" cy="9" r="5" fill="none" stroke="#B45309" stroke-width="1.3" />
+              <circle cx="10" cy="2" r="1.5" fill="#B45309" />
+              <circle cx="10" cy="16" r="1.5" fill="#B45309" />
+              <circle cx="3" cy="9" r="1.5" fill="#B45309" />
+              <circle cx="17" cy="9" r="1.5" fill="#B45309" />
+            </g>
+    <text x="444.0" y="568.0" font-size="12" font-weight="700" fill="#0F172A" text-anchor="middle" letter-spacing="0.5">
+      DINING ROOM
+    </text>
+    <text x="444.0" y="583.0" font-size="10.5" font-weight="600" fill="#475569" text-anchor="middle">
+      12' × 10'
+    </text>
+    <text x="444.0" y="596.0" font-size="9" font-weight="500" fill="#94A3B8" text-anchor="middle">
+      (120 sq ft)
+    </text>
+  </g>
+  <!-- Labels for Kitchen -->
+  <g id="labels_kitchen" pointer-events="none">
+    <g transform="translate(254.0, 544.0)" opacity="0.45">
+              <rect x="2" y="3" width="16" height="12" rx="1.5" fill="none" stroke="#065F46" stroke-width="1.3" />
+              <circle cx="6.5" cy="9" r="2" fill="none" stroke="#065F46" stroke-width="1" />
+              <circle cx="13.5" cy="9" r="2" fill="none" stroke="#065F46" stroke-width="1" />
+            </g>
+    <text x="264.0" y="568.0" font-size="12" font-weight="700" fill="#0F172A" text-anchor="middle" letter-spacing="0.5">
+      KITCHEN
+    </text>
+    <text x="264.0" y="583.0" font-size="10.5" font-weight="600" fill="#475569" text-anchor="middle">
+      10' × 10'
+    </text>
+    <text x="264.0" y="596.0" font-size="9" font-weight="500" fill="#94A3B8" text-anchor="middle">
+      (105 sq ft)
+    </text>
+  </g>
+  <!-- Labels for Bathroom 2 -->
+  <g id="labels_bathroom_2" pointer-events="none">
+    <g transform="translate(110.0, 544.0)" opacity="0.45">
+              <path d="M 3 9 C 3 14 17 14 17 9 L 17 6 L 3 6 Z" fill="none" stroke="#0369A1" stroke-width="1.3" />
+              <path d="M 5 6 L 5 3 C 5 2 7 2 7 3" fill="none" stroke="#0369A1" stroke-width="1.2" />
+            </g>
+    <text x="120.0" y="568.0" font-size="12" font-weight="700" fill="#0F172A" text-anchor="middle" letter-spacing="0.5">
+      BATHROOM 2
+    </text>
+    <text x="120.0" y="583.0" font-size="10.5" font-weight="600" fill="#475569" text-anchor="middle">
+      8' × 10'
+    </text>
+    <text x="120.0" y="596.0" font-size="9" font-weight="500" fill="#94A3B8" text-anchor="middle">
+      (75 sq ft)
+    </text>
+  </g>
+  <!-- Labels for Bedroom 3 -->
+  <g id="labels_bedroom_3" pointer-events="none">
+    <g transform="translate(410.0, 368.0)" opacity="0.45">
+              <rect x="2" y="2" width="16" height="14" rx="2" fill="none" stroke="#3730A3" stroke-width="1.3" />
+              <rect x="4" y="4" width="5" height="4" rx="1" fill="#3730A3" />
+              <rect x="11" y="4" width="5" height="4" rx="1" fill="#3730A3" />
+              <line x1="2" y1="10" x2="18" y2="10" stroke="#3730A3" stroke-width="1.2" />
+            </g>
+    <text x="420.0" y="392.0" font-size="12" font-weight="700" fill="#0F172A" text-anchor="middle" letter-spacing="0.5">
+      BEDROOM 3
+    </text>
+    <text x="420.0" y="407.0" font-size="10.5" font-weight="600" fill="#475569" text-anchor="middle">
+      15' × 12'
+    </text>
+    <text x="420.0" y="420.0" font-size="9" font-weight="500" fill="#94A3B8" text-anchor="middle">
+      (180 sq ft)
+    </text>
+  </g>
+  <!-- Labels for Bedroom 2 -->
+  <g id="labels_bedroom_2" pointer-events="none">
+    <g transform="translate(170.0, 368.0)" opacity="0.45">
+              <rect x="2" y="2" width="16" height="14" rx="2" fill="none" stroke="#3730A3" stroke-width="1.3" />
+              <rect x="4" y="4" width="5" height="4" rx="1" fill="#3730A3" />
+              <rect x="11" y="4" width="5" height="4" rx="1" fill="#3730A3" />
+              <line x1="2" y1="10" x2="18" y2="10" stroke="#3730A3" stroke-width="1.2" />
+            </g>
+    <text x="180.0" y="392.0" font-size="12" font-weight="700" fill="#0F172A" text-anchor="middle" letter-spacing="0.5">
+      BEDROOM 2
+    </text>
+    <text x="180.0" y="407.0" font-size="10.5" font-weight="600" fill="#475569" text-anchor="middle">
+      15' × 12'
+    </text>
+    <text x="180.0" y="420.0" font-size="9" font-weight="500" fill="#94A3B8" text-anchor="middle">
+      (180 sq ft)
+    </text>
+  </g>
+  <!-- Labels for Bedroom 1 -->
+  <g id="labels_bedroom_1" pointer-events="none">
+    <g transform="translate(386.0, 176.0)" opacity="0.45">
+              <rect x="2" y="2" width="16" height="14" rx="2" fill="none" stroke="#3730A3" stroke-width="1.3" />
+              <rect x="4" y="4" width="5" height="4" rx="1" fill="#3730A3" />
+              <rect x="11" y="4" width="5" height="4" rx="1" fill="#3730A3" />
+              <line x1="2" y1="10" x2="18" y2="10" stroke="#3730A3" stroke-width="1.2" />
+            </g>
+    <text x="396.0" y="200.0" font-size="12" font-weight="700" fill="#0F172A" text-anchor="middle" letter-spacing="0.5">
+      BEDROOM 1
+    </text>
+    <text x="396.0" y="215.0" font-size="10.5" font-weight="600" fill="#475569" text-anchor="middle">
+      18' × 12'
+    </text>
+    <text x="396.0" y="228.0" font-size="9" font-weight="500" fill="#94A3B8" text-anchor="middle">
+      (216 sq ft)
+    </text>
+  </g>
+  <!-- Labels for Bathroom 1 -->
+  <g id="labels_bathroom_1" pointer-events="none">
+    <g transform="translate(146.0, 216.0)" opacity="0.45">
+              <path d="M 3 9 C 3 14 17 14 17 9 L 17 6 L 3 6 Z" fill="none" stroke="#0369A1" stroke-width="1.3" />
+              <path d="M 5 6 L 5 3 C 5 2 7 2 7 3" fill="none" stroke="#0369A1" stroke-width="1.2" />
+            </g>
+    <text x="156.0" y="240.0" font-size="12" font-weight="700" fill="#0F172A" text-anchor="middle" letter-spacing="0.5">
+      BATHROOM 1
+    </text>
+    <text x="156.0" y="255.0" font-size="10.5" font-weight="600" fill="#475569" text-anchor="middle">
+      12' × 7'
+    </text>
+    <text x="156.0" y="268.0" font-size="9" font-weight="500" fill="#94A3B8" text-anchor="middle">
+      (84 sq ft)
+    </text>
+  </g>
+  <!-- Labels for Balcony -->
+  <g id="labels_balcony" pointer-events="none">
+    <g transform="translate(146.0, 120.0)" opacity="0.45">
+              <rect x="2" y="4" width="16" height="10" rx="1" fill="none" stroke="#0F766E" stroke-width="1.3" />
+              <line x1="6" y1="4" x2="6" y2="14" stroke="#0F766E" stroke-width="1" />
+              <line x1="10" y1="4" x2="10" y2="14" stroke="#0F766E" stroke-width="1" />
+              <line x1="14" y1="4" x2="14" y2="14" stroke="#0F766E" stroke-width="1" />
+            </g>
+    <text x="156.0" y="144.0" font-size="12" font-weight="700" fill="#0F172A" text-anchor="middle" letter-spacing="0.5">
+      BALCONY
+    </text>
+    <text x="156.0" y="159.0" font-size="10.5" font-weight="600" fill="#475569" text-anchor="middle">
+      12' × 5'
+    </text>
+    <text x="156.0" y="172.0" font-size="9" font-weight="500" fill="#94A3B8" text-anchor="middle">
+      (60 sq ft)
+    </text>
+  </g>
+  <!-- Main Entry Door -->
+  <g id="entry_door">
+    <!-- Opening gap mask -->
+    <line x1="100.0" y1="900.0" x2="148.0" y2="900.0" stroke="#FFFFFF" stroke-width="5" />
+    <!-- Door Swing Arc (inward/upward) -->
+    <path d="M 100.0 852.0 A 48.0 48.0 0 0 1 148.0 900.0" 
+          fill="none" stroke="#2563EB" stroke-width="1.2" stroke-dasharray="3,3" />
+    <!-- Door Leaf -->
+    <line x1="100.0" y1="900.0" x2="100.0" y2="852.0" stroke="#0F172A" stroke-width="2.5" />
+    <!-- Entry Label & Arrow -->
+    <text x="124.0" y="922.0" font-size="9.5" font-weight="800" fill="#2563EB" text-anchor="middle">▲ ENTRY</text>
+  </g>
+  <!-- Interior Door Vertical (Living Room -> Parking) -->
+  <g>
+    <!-- Wall opening -->
+    <line x1="380.0" y1="852.0" x2="380.0" y2="892.0" stroke="#FFFFFF" stroke-width="4" />
+    <!-- Door Swing Arc -->
+    <path d="M 420.0 852.0 A 40.0 40.0 0 0 1 380.0 892.0" 
+          fill="none" stroke="#94A3B8" stroke-width="1.2" stroke-dasharray="2.5,2.5" />
+    <!-- Door Leaf -->
+    <line x1="380.0" y1="852.0" x2="420.0" y2="852.0" stroke="#1E293B" stroke-width="2.2" />
+  </g>
+  <!-- Interior Door (Living Room -> Kitchen) -->
+  <g>
+    <!-- Wall opening -->
+    <line x1="188.0" y1="644.0" x2="228.0" y2="644.0" stroke="#FFFFFF" stroke-width="4" />
+    <!-- Door Swing Arc -->
+    <path d="M 188.0 604.0 A 40.0 40.0 0 0 1 228.0 644.0" 
+          fill="none" stroke="#94A3B8" stroke-width="1.2" stroke-dasharray="2.5,2.5" />
+    <!-- Door Leaf -->
+    <line x1="188.0" y1="644.0" x2="188.0" y2="604.0" stroke="#1E293B" stroke-width="2.2" />
+  </g>
+  <!-- Interior Door (Living Room -> Bathroom 2) -->
+  <g>
+    <!-- Wall opening -->
+    <line x1="68.0" y1="644.0" x2="108.0" y2="644.0" stroke="#FFFFFF" stroke-width="4" />
+    <!-- Door Swing Arc -->
+    <path d="M 68.0 604.0 A 40.0 40.0 0 0 1 108.0 644.0" 
+          fill="none" stroke="#94A3B8" stroke-width="1.2" stroke-dasharray="2.5,2.5" />
+    <!-- Door Leaf -->
+    <line x1="68.0" y1="644.0" x2="68.0" y2="604.0" stroke="#1E293B" stroke-width="2.2" />
+  </g>
+  <!-- Interior Door (Parking -> Dining Room) -->
+  <g>
+    <!-- Wall opening -->
+    <line x1="388.0" y1="644.0" x2="428.0" y2="644.0" stroke="#FFFFFF" stroke-width="4" />
+    <!-- Door Swing Arc -->
+    <path d="M 388.0 604.0 A 40.0 40.0 0 0 1 428.0 644.0" 
+          fill="none" stroke="#94A3B8" stroke-width="1.2" stroke-dasharray="2.5,2.5" />
+    <!-- Door Leaf -->
+    <line x1="388.0" y1="644.0" x2="388.0" y2="604.0" stroke="#1E293B" stroke-width="2.2" />
+  </g>
+  <!-- Interior Door (Dining Room -> Bedroom 3) -->
+  <g>
+    <!-- Wall opening -->
+    <line x1="356.0" y1="484.0" x2="396.0" y2="484.0" stroke="#FFFFFF" stroke-width="4" />
+    <!-- Door Swing Arc -->
+    <path d="M 356.0 444.0 A 40.0 40.0 0 0 1 396.0 484.0" 
+          fill="none" stroke="#94A3B8" stroke-width="1.2" stroke-dasharray="2.5,2.5" />
+    <!-- Door Leaf -->
+    <line x1="356.0" y1="484.0" x2="356.0" y2="444.0" stroke="#1E293B" stroke-width="2.2" />
+  </g>
+  <!-- Interior Door (Kitchen -> Bedroom 2) -->
+  <g>
+    <!-- Wall opening -->
+    <line x1="188.0" y1="484.0" x2="228.0" y2="484.0" stroke="#FFFFFF" stroke-width="4" />
+    <!-- Door Swing Arc -->
+    <path d="M 188.0 444.0 A 40.0 40.0 0 0 1 228.0 484.0" 
+          fill="none" stroke="#94A3B8" stroke-width="1.2" stroke-dasharray="2.5,2.5" />
+    <!-- Door Leaf -->
+    <line x1="188.0" y1="484.0" x2="188.0" y2="444.0" stroke="#1E293B" stroke-width="2.2" />
+  </g>
+  <!-- Interior Door (Bedroom 3 -> Bedroom 1) -->
+  <g>
+    <!-- Wall opening -->
+    <line x1="308.0" y1="292.0" x2="348.0" y2="292.0" stroke="#FFFFFF" stroke-width="4" />
+    <!-- Door Swing Arc -->
+    <path d="M 308.0 252.0 A 40.0 40.0 0 0 1 348.0 292.0" 
+          fill="none" stroke="#94A3B8" stroke-width="1.2" stroke-dasharray="2.5,2.5" />
+    <!-- Door Leaf -->
+    <line x1="308.0" y1="292.0" x2="308.0" y2="252.0" stroke="#1E293B" stroke-width="2.2" />
+  </g>
+  <!-- Interior Door (Bedroom 2 -> Bathroom 1) -->
+  <g>
+    <!-- Wall opening -->
+    <line x1="68.0" y1="292.0" x2="108.0" y2="292.0" stroke="#FFFFFF" stroke-width="4" />
+    <!-- Door Swing Arc -->
+    <path d="M 68.0 252.0 A 40.0 40.0 0 0 1 108.0 292.0" 
+          fill="none" stroke="#94A3B8" stroke-width="1.2" stroke-dasharray="2.5,2.5" />
+    <!-- Door Leaf -->
+    <line x1="68.0" y1="292.0" x2="68.0" y2="252.0" stroke="#1E293B" stroke-width="2.2" />
+  </g>
+  <!-- Interior Door Vertical (Bedroom 1 -> Balcony) -->
+  <g>
+    <!-- Wall opening -->
+    <line x1="252.0" y1="132.0" x2="252.0" y2="172.0" stroke="#FFFFFF" stroke-width="4" />
+    <!-- Door Swing Arc -->
+    <path d="M 292.0 132.0 A 40.0 40.0 0 0 1 252.0 172.0" 
+          fill="none" stroke="#94A3B8" stroke-width="1.2" stroke-dasharray="2.5,2.5" />
+    <!-- Door Leaf -->
+    <line x1="252.0" y1="132.0" x2="292.0" y2="132.0" stroke="#1E293B" stroke-width="2.2" />
+  </g>
+  <!-- Exterior Plot Frame -->
+  <rect x="60.0" y="100.0" width="480.0" height="800.0" fill="none" stroke="#0F172A" stroke-width="4.5" rx="2" />
+  <!-- Dimension Annotations -->
+  <g id="dimensions" stroke="#64748B" stroke-width="1" fill="#64748B" font-size="10" font-weight="600">
+    <!-- Top Width Dimension: 20'-0" -->
+    <line x1="60.0" y1="82.0" x2="540.0" y2="82.0" marker-start="url(#arrow)" marker-end="url(#arrow)" />
+    <line x1="60.0" y1="95.0" x2="60.0" y2="78.0" stroke="#94A3B8" stroke-dasharray="2,2" />
+    <line x1="540.0" y1="95.0" x2="540.0" y2="78.0" stroke="#94A3B8" stroke-dasharray="2,2" />
+    <text x="300.0" y="76.0" text-anchor="middle" stroke="none" fill="#334155">30'-0" (WIDTH)</text>
+
+    <!-- Left Length Dimension: 40'-0" -->
+    <line x1="42.0" y1="100.0" x2="42.0" y2="900.0" marker-start="url(#arrow)" marker-end="url(#arrow)" />
+    <line x1="55.0" y1="100.0" x2="38.0" y2="100.0" stroke="#94A3B8" stroke-dasharray="2,2" />
+    <line x1="55.0" y1="900.0" x2="38.0" y2="900.0" stroke="#94A3B8" stroke-dasharray="2,2" />
+    <text x="34.0" y="500.0" text-anchor="middle" transform="rotate(-90, 34.0, 500.0)" stroke="none" fill="#334155">
+      50'-0" (LENGTH)
+    </text>
+  </g>
+  <!-- Footer & Scale Bar -->
+  <g id="footer" transform="translate(0, 0)">
+    <!-- Scale Bar (10 ft) -->
+    <g transform="translate(60.0, 955.0)">
+      <text x="0" y="-8" font-size="9" font-weight="600" fill="#64748B">SCALE: 1/4" = 1'-0"</text>
+      <!-- 0 to 10 ft bar -->
+      <rect x="0" y="0" width="80.0" height="4" fill="#0F172A" />
+      <rect x="80.0" y="0" width="80.0" height="4" fill="#94A3B8" />
+      <text x="0" y="14" font-size="8" fill="#64748B">0</text>
+      <text x="80.0" y="14" font-size="8" fill="#64748B" text-anchor="middle">5'</text>
+      <text x="160.0" y="14" font-size="8" fill="#64748B" text-anchor="end">10 FT</text>
+    </g>
+
+    <!-- North Arrow -->
+    <g transform="translate(500.0, 947.0)">
+      <circle cx="15" cy="15" r="14" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="1.2" />
+      <polygon points="15,4 19,16 15,13" fill="#EF4444" />
+      <polygon points="15,4 11,16 15,13" fill="#94A3B8" />
+      <text x="15" y="-1" font-size="9" font-weight="800" fill="#EF4444" text-anchor="middle">N</text>
+    </g>
+
+    <!-- Synthetic Dataset Tag -->
+    <text x="300.0" y="975.0" font-size="8.5" font-weight="500" fill="#94A3B8" text-anchor="middle">
+      PLANORA Synthetic Dataset Generator V1 • Research & Prototyping
+    </text>
+  </g>
+</svg>

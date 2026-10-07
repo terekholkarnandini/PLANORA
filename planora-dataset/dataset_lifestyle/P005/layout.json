@@ -1,0 +1,137 @@
+{
+  "plot": {
+    "width": 30.0,
+    "length": 50.0
+  },
+  "rooms": [
+    {
+      "name": "Living Room",
+      "room": "Living Room",
+      "type": "living_room",
+      "x": 0.0,
+      "y": 0.0,
+      "width": 16.5,
+      "height": 16.0
+    },
+    {
+      "name": "Kitchen",
+      "room": "Kitchen",
+      "type": "kitchen",
+      "x": 16.5,
+      "y": 0.0,
+      "width": 13.5,
+      "height": 16.0
+    },
+    {
+      "name": "Bedroom 3",
+      "room": "Bedroom 3",
+      "type": "bedroom",
+      "x": 0.0,
+      "y": 16.0,
+      "width": 16.5,
+      "height": 13.0
+    },
+    {
+      "name": "Bathroom 2",
+      "room": "Bathroom 2",
+      "type": "bathroom",
+      "x": 16.5,
+      "y": 16.0,
+      "width": 13.5,
+      "height": 13.0
+    },
+    {
+      "name": "Bedroom 2",
+      "room": "Bedroom 2",
+      "type": "bedroom",
+      "x": 0.0,
+      "y": 29.0,
+      "width": 15.0,
+      "height": 21.0
+    },
+    {
+      "name": "Bathroom 1",
+      "room": "Bathroom 1",
+      "type": "bathroom",
+      "x": 15.0,
+      "y": 29.0,
+      "width": 15.0,
+      "height": 8.0
+    },
+    {
+      "name": "Bedroom 1",
+      "room": "Bedroom 1",
+      "type": "bedroom",
+      "x": 15.0,
+      "y": 37.0,
+      "width": 15.0,
+      "height": 13.0
+    }
+  ],
+  "doors": [
+    {
+      "room_a": "Exterior",
+      "room_b": "Living Room",
+      "x": 2.5,
+      "y": 0.0,
+      "width": 3.0,
+      "orientation": "horizontal",
+      "swing": "inward"
+    },
+    {
+      "room_a": "Living Room",
+      "room_b": "Kitchen",
+      "x": 16.5,
+      "y": 0.5,
+      "width": 2.5,
+      "orientation": "vertical",
+      "swing": "inward"
+    },
+    {
+      "room_a": "Living Room",
+      "room_b": "Bedroom 3",
+      "x": 0.5,
+      "y": 16.0,
+      "width": 2.5,
+      "orientation": "horizontal",
+      "swing": "inward"
+    },
+    {
+      "room_a": "Kitchen",
+      "room_b": "Bathroom 2",
+      "x": 17.0,
+      "y": 16.0,
+      "width": 2.5,
+      "orientation": "horizontal",
+      "swing": "inward"
+    },
+    {
+      "room_a": "Bedroom 3",
+      "room_b": "Bedroom 2",
+      "x": 0.5,
+      "y": 29.0,
+      "width": 2.5,
+      "orientation": "horizontal",
+      "swing": "inward"
+    },
+    {
+      "room_a": "Bathroom 2",
+      "room_b": "Bathroom 1",
+      "x": 17.0,
+      "y": 29.0,
+      "width": 2.5,
+      "orientation": "horizontal",
+      "swing": "inward"
+    },
+    {
+      "room_a": "Bedroom 2",
+      "room_b": "Bedroom 1",
+      "x": 15.0,
+      "y": 37.5,
+      "width": 2.5,
+      "orientation": "vertical",
+      "swing": "inward"
+    }
+  ],
+  "archetype": "3bed_2bath_family_residence"
+}

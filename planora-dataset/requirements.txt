@@ -1,0 +1,7 @@
+# PLANORA Synthetic Dataset Generator (Version 1)
+# 
+# The core generator runs entirely on the Python Standard Library (Python 3.8+)
+# with zero external production dependencies required!
+
+# Optional development & testing dependencies:
+pytest>=7.0.0
