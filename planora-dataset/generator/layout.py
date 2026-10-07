@@ -242,10 +242,12 @@ class LayoutGenerator:
             rooms, arch_name = self._generate_4bed_villa_parking_balcony_layout(plot_w, plot_l, rng)
         elif has_parking and n_beds >= 3:
             rooms, arch_name = self._generate_parking_balcony_layout(plot_w, plot_l, n_beds, n_baths, rng)
+        elif has_parking:
+            rooms, arch_name = self._generate_2bed_parking_layout(plot_w, plot_l, n_baths, has_dining, rng)
         elif has_balcony and has_dining:
             rooms, arch_name = self._generate_dining_balcony_layout(plot_w, plot_l, n_beds, n_baths, rng)
-        elif has_balcony:
-            rooms, arch_name = self._generate_balcony_layout(plot_w, plot_l, n_beds, n_baths, rng)
+        elif has_dining:
+            rooms, arch_name = self._generate_dining_balcony_layout(plot_w, plot_l, n_beds, n_baths, rng)
         elif n_beds == 1:
             rooms, arch_name = self._generate_1bed_layout(plot_w, plot_l, rng)
         elif n_beds == 2 and n_baths >= 2:
@@ -403,6 +405,50 @@ class LayoutGenerator:
             Room("Balcony", "balcony", W * 0.6, L - h_balcony, W * 0.4, h_balcony),
         ]
         return rooms, "executive_residence_parking_balcony"
+
+    def _generate_2bed_parking_layout(self, W: float, L: float, n_baths: int, has_dining: bool, rng: random.Random) -> Tuple[List[Room], str]:
+        """2 Bed, 1 or 2 Bath + Car Parking Porch + optional Dining."""
+        w_park = max(10.0, W * 0.33)
+        w_liv = W - w_park
+        y_front = min(15.0, L * 0.35)
+
+        y_mid = min(11.0, L * 0.28)
+        y_rear_start = y_front + y_mid
+        rear_depth = L - y_rear_start
+
+        if has_dining:
+            w_din = max(8.0, W * 0.38)
+            w_kit = max(8.0, W * 0.35)
+            w_bath_area = W - (w_din + w_kit)
+            w_rem = W * 0.5
+            w_bed1 = max(10.0, w_rem - 5.0) if n_baths > 1 else w_rem
+            w_bath1 = max(5.0, w_rem - w_bed1)
+            rooms = [
+                Room("Parking", "parking", 0.0, 0.0, w_park, y_front),
+                Room("Living Room", "living_room", w_park, 0.0, w_liv, y_front),
+                Room("Dining Room", "dining_room", 0.0, y_front, w_din, y_mid),
+                Room("Kitchen", "kitchen", w_din, y_front, w_kit, y_mid),
+                Room("Bathroom 2" if n_baths > 1 else "Bathroom", "bathroom", w_din + w_kit, y_front, w_bath_area, y_mid),
+                Room("Bedroom 2", "bedroom", 0.0, y_rear_start, W * 0.5, rear_depth),
+                Room("Bedroom 1", "bedroom", W * 0.5, y_rear_start, w_bed1, rear_depth),
+            ]
+            if n_baths > 1:
+                rooms.append(Room("Bathroom 1", "bathroom", W * 0.5 + w_bed1, y_rear_start, w_bath1, rear_depth))
+        else:
+            w_kit = max(8.0, W * 0.5)
+            w_bath_area = W - w_kit
+            rooms = [
+                Room("Parking", "parking", 0.0, 0.0, w_park, y_front),
+                Room("Living Room", "living_room", w_park, 0.0, w_liv, y_front),
+                Room("Kitchen", "kitchen", 0.0, y_front, w_kit, y_mid),
+                Room("Bathroom 2" if n_baths > 1 else "Bathroom", "bathroom", w_kit, y_front, w_bath_area, y_mid),
+                Room("Bedroom 2", "bedroom", 0.0, y_rear_start, W * 0.5, rear_depth),
+                Room("Bedroom 1", "bedroom", W * 0.5, y_rear_start, W * (0.5 if n_baths <= 1 else 0.3), rear_depth),
+            ]
+            if n_baths > 1:
+                rooms.append(Room("Bathroom 1", "bathroom", W * 0.8, y_rear_start, W * 0.2, rear_depth))
+
+        return rooms, "2bed_parking_suite"
 
     # --------------------------------------------------------------------------
     # 1 BEDROOM, 1 BATHROOM (Studio / 1-BHK)

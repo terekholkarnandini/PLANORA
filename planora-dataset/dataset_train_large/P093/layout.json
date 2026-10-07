@@ -1,0 +1,119 @@
+{
+  "plot": {
+    "width": 20.0,
+    "length": 40.0
+  },
+  "rooms": [
+    {
+      "name": "Living Room",
+      "room": "Living Room",
+      "type": "living_room",
+      "x": 0.0,
+      "y": 0.0,
+      "width": 20.0,
+      "height": 13.0
+    },
+    {
+      "name": "Kitchen",
+      "room": "Kitchen",
+      "type": "kitchen",
+      "x": 10.0,
+      "y": 13.0,
+      "width": 10.0,
+      "height": 11.0
+    },
+    {
+      "name": "Bathroom",
+      "room": "Bathroom",
+      "type": "bathroom",
+      "x": 0.0,
+      "y": 13.0,
+      "width": 10.0,
+      "height": 11.0
+    },
+    {
+      "name": "Bedroom 2",
+      "room": "Bedroom 2",
+      "type": "bedroom",
+      "x": 10.0,
+      "y": 24.0,
+      "width": 10.0,
+      "height": 16.0
+    },
+    {
+      "name": "Bedroom 1",
+      "room": "Bedroom 1",
+      "type": "bedroom",
+      "x": 0.0,
+      "y": 24.0,
+      "width": 10.0,
+      "height": 11.0
+    },
+    {
+      "name": "Balcony",
+      "room": "Balcony",
+      "type": "balcony",
+      "x": 0.0,
+      "y": 35.0,
+      "width": 10.0,
+      "height": 5.0
+    }
+  ],
+  "doors": [
+    {
+      "room_a": "Exterior",
+      "room_b": "Living Room",
+      "x": 2.5,
+      "y": 0.0,
+      "width": 3.0,
+      "orientation": "horizontal",
+      "swing": "inward"
+    },
+    {
+      "room_a": "Living Room",
+      "room_b": "Kitchen",
+      "x": 10.5,
+      "y": 13.0,
+      "width": 2.5,
+      "orientation": "horizontal",
+      "swing": "inward"
+    },
+    {
+      "room_a": "Living Room",
+      "room_b": "Bathroom",
+      "x": 0.5,
+      "y": 13.0,
+      "width": 2.5,
+      "orientation": "horizontal",
+      "swing": "inward"
+    },
+    {
+      "room_a": "Kitchen",
+      "room_b": "Bedroom 2",
+      "x": 10.5,
+      "y": 24.0,
+      "width": 2.5,
+      "orientation": "horizontal",
+      "swing": "inward"
+    },
+    {
+      "room_a": "Bathroom",
+      "room_b": "Bedroom 1",
+      "x": 0.5,
+      "y": 24.0,
+      "width": 2.5,
+      "orientation": "horizontal",
+      "swing": "inward"
+    },
+    {
+      "room_a": "Bedroom 2",
+      "room_b": "Balcony",
+      "x": 10.0,
+      "y": 35.5,
+      "width": 2.5,
+      "orientation": "vertical",
+      "swing": "inward"
+    }
+  ],
+  "archetype": "2bed_master_garden_balcony_mirrored"
+}

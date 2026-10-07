@@ -1,0 +1,140 @@
+{
+  "metrics": {
+    "total_test_samples": 15,
+    "room_count_accuracy_pct": 80.0,
+    "required_room_accuracy_pct": 80.0,
+    "boundary_violation_rate_pct": 0.0,
+    "room_overlap_rate_pct": 0.0,
+    "constraint_satisfaction_rate_pct": 100.0,
+    "valid_plan_generation_rate_pct": 80.0,
+    "average_coordinate_mae_ft": 1.27
+  },
+  "samples": [
+    {
+      "id": 1,
+      "prompt": "30x50 ft plot, 3 bedrooms, 2 bathrooms, 1 kitchen and 1 living room.",
+      "rooms_count": 7,
+      "valid": true,
+      "errors": [],
+      "was_repaired": true
+    },
+    {
+      "id": 2,
+      "prompt": "Generate a residential floor plan for a 30x40 ft plot with 3 bedrooms, 2 bathrooms, 1 kitchen and 1 living room.",
+      "rooms_count": 7,
+      "valid": true,
+      "errors": [],
+      "was_repaired": true
+    },
+    {
+      "id": 3,
+      "prompt": "Create an architectural floor plan on 20x40 ft with 2 bedrooms, 1 bathroom, 1 kitchen and 1 living room.",
+      "rooms_count": 5,
+      "valid": true,
+      "errors": [],
+      "was_repaired": true
+    },
+    {
+      "id": 4,
+      "prompt": "I need a 20x40 ft house with 2 bedrooms, 1 bathroom, 1 kitchen and 1 living room.",
+      "rooms_count": 5,
+      "valid": true,
+      "errors": [],
+      "was_repaired": true
+    },
+    {
+      "id": 5,
+      "prompt": "Generate a residential floor plan for a 20x40 ft plot with 2 bedrooms, 1 bathroom, 1 kitchen, 1 living room and 1 balcony.",
+      "rooms_count": 5,
+      "valid": false,
+      "errors": [
+        "Required room type missing: Balcony."
+      ],
+      "was_repaired": true
+    },
+    {
+      "id": 6,
+      "prompt": "Design a layout for a 30 by 40 feet house with 3 bedrooms, 2 bathrooms, 1 kitchen and 1 living room.",
+      "rooms_count": 7,
+      "valid": true,
+      "errors": [],
+      "was_repaired": true
+    },
+    {
+      "id": 7,
+      "prompt": "Design a layout for a 30 by 50 feet house with 3 bedrooms, 2 bathrooms, 1 kitchen, 1 living room, 1 dining room, 1 balcony and parking.",
+      "rooms_count": 10,
+      "valid": true,
+      "errors": [],
+      "was_repaired": true
+    },
+    {
+      "id": 8,
+      "prompt": "Floor plan layout: 20x30 ft plot size, 1 bedroom, 1 bathroom, 1 kitchen and 1 living room.",
+      "rooms_count": 4,
+      "valid": true,
+      "errors": [],
+      "was_repaired": true
+    },
+    {
+      "id": 9,
+      "prompt": "Generate a residential floor plan for a 20x40 ft plot with 2 bedrooms, 1 bathroom, 1 kitchen, 1 living room and 1 balcony.",
+      "rooms_count": 5,
+      "valid": false,
+      "errors": [
+        "Required room type missing: Balcony."
+      ],
+      "was_repaired": true
+    },
+    {
+      "id": 10,
+      "prompt": "Floor plan layout: 30x50 ft plot size, 3 bedrooms, 2 bathrooms, 1 kitchen and 1 living room.",
+      "rooms_count": 7,
+      "valid": true,
+      "errors": [],
+      "was_repaired": true
+    },
+    {
+      "id": 11,
+      "prompt": "Floor plan layout: 30x50 ft plot size, 3 bedrooms, 2 bathrooms, 1 kitchen and 1 living room.",
+      "rooms_count": 7,
+      "valid": true,
+      "errors": [],
+      "was_repaired": true
+    },
+    {
+      "id": 12,
+      "prompt": "Floor plan layout: 20x40 ft plot size, 2 bedrooms, 1 bathroom, 1 kitchen, 1 living room and 1 balcony.",
+      "rooms_count": 5,
+      "valid": false,
+      "errors": [
+        "Required room type missing: Balcony."
+      ],
+      "was_repaired": true
+    },
+    {
+      "id": 13,
+      "prompt": "Create an architectural floor plan on 30x50 ft with 3 bedrooms, 2 bathrooms, 1 kitchen and 1 living room.",
+      "rooms_count": 7,
+      "valid": true,
+      "errors": [],
+      "was_repaired": true
+    },
+    {
+      "id": 14,
+      "prompt": "Create an architectural floor plan on 25x40 ft with 2 bedrooms, 2 bathrooms, 1 kitchen and 1 living room.",
+      "rooms_count": 6,
+      "valid": true,
+      "errors": [],
+      "was_repaired": true
+    },
+    {
+      "id": 15,
+      "prompt": "Generate a residential floor plan for a 25x40 ft plot with 3 bedrooms, 2 bathrooms, 1 kitchen and 1 living room.",
+      "rooms_count": 7,
+      "valid": true,
+      "errors": [],
+      "was_repaired": true
+    }
+  ]
+}

@@ -1,0 +1,245 @@
+{
+  "plot": {
+    "width": 40.0,
+    "length": 60.0
+  },
+  "rooms": [
+    {
+      "name": "Parking",
+      "room": "Parking",
+      "type": "parking",
+      "x": 0.0,
+      "y": 0.0,
+      "width": 12.0,
+      "height": 16.0
+    },
+    {
+      "name": "Living Room",
+      "room": "Living Room",
+      "type": "living_room",
+      "x": 12.0,
+      "y": 0.0,
+      "width": 28.0,
+      "height": 16.0
+    },
+    {
+      "name": "Dining Room",
+      "room": "Dining Room",
+      "type": "dining_room",
+      "x": 0.0,
+      "y": 16.0,
+      "width": 15.0,
+      "height": 13.0
+    },
+    {
+      "name": "Kitchen",
+      "room": "Kitchen",
+      "type": "kitchen",
+      "x": 15.0,
+      "y": 16.0,
+      "width": 13.0,
+      "height": 13.0
+    },
+    {
+      "name": "Utility",
+      "room": "Utility",
+      "type": "utility",
+      "x": 28.0,
+      "y": 16.0,
+      "width": 12.0,
+      "height": 6.0
+    },
+    {
+      "name": "Bathroom 3",
+      "room": "Bathroom 3",
+      "type": "bathroom",
+      "x": 28.0,
+      "y": 22.0,
+      "width": 12.0,
+      "height": 7.0
+    },
+    {
+      "name": "Bedroom 4",
+      "room": "Bedroom 4",
+      "type": "bedroom",
+      "x": 0.0,
+      "y": 29.0,
+      "width": 18.0,
+      "height": 14.0
+    },
+    {
+      "name": "Bedroom 3",
+      "room": "Bedroom 3",
+      "type": "bedroom",
+      "x": 18.0,
+      "y": 29.0,
+      "width": 22.0,
+      "height": 14.0
+    },
+    {
+      "name": "Bedroom 2",
+      "room": "Bedroom 2",
+      "type": "bedroom",
+      "x": 0.0,
+      "y": 43.0,
+      "width": 18.0,
+      "height": 17.0
+    },
+    {
+      "name": "Bedroom 1",
+      "room": "Bedroom 1",
+      "type": "bedroom",
+      "x": 18.0,
+      "y": 43.0,
+      "width": 14.0,
+      "height": 17.0
+    },
+    {
+      "name": "Bathroom 2",
+      "room": "Bathroom 2",
+      "type": "bathroom",
+      "x": 32.0,
+      "y": 43.0,
+      "width": 8.0,
+      "height": 6.0
+    },
+    {
+      "name": "Bathroom 1",
+      "room": "Bathroom 1",
+      "type": "bathroom",
+      "x": 32.0,
+      "y": 49.0,
+      "width": 8.0,
+      "height": 6.0
+    },
+    {
+      "name": "Balcony",
+      "room": "Balcony",
+      "type": "balcony",
+      "x": 32.0,
+      "y": 55.0,
+      "width": 8.0,
+      "height": 5.0
+    }
+  ],
+  "doors": [
+    {
+      "room_a": "Exterior",
+      "room_b": "Living Room",
+      "x": 14.5,
+      "y": 0.0,
+      "width": 3.0,
+      "orientation": "horizontal",
+      "swing": "inward"
+    },
+    {
+      "room_a": "Living Room",
+      "room_b": "Parking",
+      "x": 12.0,
+      "y": 0.5,
+      "width": 2.5,
+      "orientation": "vertical",
+      "swing": "inward"
+    },
+    {
+      "room_a": "Living Room",
+      "room_b": "Dining Room",
+      "x": 12.5,
+      "y": 16.0,
+      "width": 2.5,
+      "orientation": "horizontal",
+      "swing": "inward"
+    },
+    {
+      "room_a": "Living Room",
+      "room_b": "Kitchen",
+      "x": 15.5,
+      "y": 16.0,
+      "width": 2.5,
+      "orientation": "horizontal",
+      "swing": "inward"
+    },
+    {
+      "room_a": "Living Room",
+      "room_b": "Utility",
+      "x": 28.5,
+      "y": 16.0,
+      "width": 2.5,
+      "orientation": "horizontal",
+      "swing": "inward"
+    },
+    {
+      "room_a": "Kitchen",
+      "room_b": "Bathroom 3",
+      "x": 28.0,
+      "y": 22.5,
+      "width": 2.5,
+      "orientation": "vertical",
+      "swing": "inward"
+    },
+    {
+      "room_a": "Dining Room",
+      "room_b": "Bedroom 4",
+      "x": 0.5,
+      "y": 29.0,
+      "width": 2.5,
+      "orientation": "horizontal",
+      "swing": "inward"
+    },
+    {
+      "room_a": "Kitchen",
+      "room_b": "Bedroom 3",
+      "x": 18.5,
+      "y": 29.0,
+      "width": 2.5,
+      "orientation": "horizontal",
+      "swing": "inward"
+    },
+    {
+      "room_a": "Bedroom 4",
+      "room_b": "Bedroom 2",
+      "x": 0.5,
+      "y": 43.0,
+      "width": 2.5,
+      "orientation": "horizontal",
+      "swing": "inward"
+    },
+    {
+      "room_a": "Bedroom 3",
+      "room_b": "Bedroom 1",
+      "x": 18.5,
+      "y": 43.0,
+      "width": 2.5,
+      "orientation": "horizontal",
+      "swing": "inward"
+    },
+    {
+      "room_a": "Bedroom 3",
+      "room_b": "Bathroom 2",
+      "x": 32.5,
+      "y": 43.0,
+      "width": 2.5,
+      "orientation": "horizontal",
+      "swing": "inward"
+    },
+    {
+      "room_a": "Bedroom 1",
+      "room_b": "Bathroom 1",
+      "x": 32.0,
+      "y": 49.5,
+      "width": 2.5,
+      "orientation": "vertical",
+      "swing": "inward"
+    },
+    {
+      "room_a": "Bedroom 1",
+      "room_b": "Balcony",
+      "x": 32.0,
+      "y": 55.5,
+      "width": 2.5,
+      "orientation": "vertical",
+      "swing": "inward"
+    }
+  ],
+  "archetype": "executive_villa_estate_parking_balcony"
+}

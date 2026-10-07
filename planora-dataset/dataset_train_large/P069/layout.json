@@ -1,0 +1,155 @@
+{
+  "plot": {
+    "width": 25.0,
+    "length": 40.0
+  },
+  "rooms": [
+    {
+      "name": "Living Room",
+      "room": "Living Room",
+      "type": "living_room",
+      "x": 0.0,
+      "y": 0.0,
+      "width": 14.5,
+      "height": 14.0
+    },
+    {
+      "name": "Dining Room",
+      "room": "Dining Room",
+      "type": "dining_room",
+      "x": 14.5,
+      "y": 0.0,
+      "width": 10.5,
+      "height": 14.0
+    },
+    {
+      "name": "Kitchen",
+      "room": "Kitchen",
+      "type": "kitchen",
+      "x": 0.0,
+      "y": 14.0,
+      "width": 12.5,
+      "height": 11.0
+    },
+    {
+      "name": "Bathroom 2",
+      "room": "Bathroom 2",
+      "type": "bathroom",
+      "x": 12.5,
+      "y": 14.0,
+      "width": 6.25,
+      "height": 11.0
+    },
+    {
+      "name": "Bathroom 1",
+      "room": "Bathroom 1",
+      "type": "bathroom",
+      "x": 18.75,
+      "y": 14.0,
+      "width": 6.25,
+      "height": 11.0
+    },
+    {
+      "name": "Bedroom 2",
+      "room": "Bedroom 2",
+      "type": "bedroom",
+      "x": 0.0,
+      "y": 25.0,
+      "width": 12.5,
+      "height": 15.0
+    },
+    {
+      "name": "Bedroom 1",
+      "room": "Bedroom 1",
+      "type": "bedroom",
+      "x": 12.5,
+      "y": 25.0,
+      "width": 12.5,
+      "height": 10.0
+    },
+    {
+      "name": "Balcony",
+      "room": "Balcony",
+      "type": "balcony",
+      "x": 12.5,
+      "y": 35.0,
+      "width": 12.5,
+      "height": 5.0
+    }
+  ],
+  "doors": [
+    {
+      "room_a": "Exterior",
+      "room_b": "Living Room",
+      "x": 2.5,
+      "y": 0.0,
+      "width": 3.0,
+      "orientation": "horizontal",
+      "swing": "inward"
+    },
+    {
+      "room_a": "Living Room",
+      "room_b": "Dining Room",
+      "x": 14.5,
+      "y": 0.5,
+      "width": 2.5,
+      "orientation": "vertical",
+      "swing": "inward"
+    },
+    {
+      "room_a": "Living Room",
+      "room_b": "Kitchen",
+      "x": 0.5,
+      "y": 14.0,
+      "width": 2.5,
+      "orientation": "horizontal",
+      "swing": "inward"
+    },
+    {
+      "room_a": "Dining Room",
+      "room_b": "Bathroom 2",
+      "x": 15.0,
+      "y": 14.0,
+      "width": 2.5,
+      "orientation": "horizontal",
+      "swing": "inward"
+    },
+    {
+      "room_a": "Dining Room",
+      "room_b": "Bathroom 1",
+      "x": 19.25,
+      "y": 14.0,
+      "width": 2.5,
+      "orientation": "horizontal",
+      "swing": "inward"
+    },
+    {
+      "room_a": "Kitchen",
+      "room_b": "Bedroom 2",
+      "x": 0.5,
+      "y": 25.0,
+      "width": 2.5,
+      "orientation": "horizontal",
+      "swing": "inward"
+    },
+    {
+      "room_a": "Bathroom 2",
+      "room_b": "Bedroom 1",
+      "x": 13.0,
+      "y": 25.0,
+      "width": 2.5,
+      "orientation": "horizontal",
+      "swing": "inward"
+    },
+    {
+      "room_a": "Bedroom 2",
+      "room_b": "Balcony",
+      "x": 12.5,
+      "y": 35.5,
+      "width": 2.5,
+      "orientation": "vertical",
+      "swing": "inward"
+    }
+  ],
+  "archetype": "2bed_dining_master_balcony_suite"
+}

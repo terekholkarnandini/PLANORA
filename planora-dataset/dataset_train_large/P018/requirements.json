@@ -1,0 +1,14 @@
+{
+  "id": "P018",
+  "plot": {
+    "width": 20,
+    "length": 30,
+    "unit": "ft"
+  },
+  "rooms": {
+    "bedrooms": 1,
+    "bathrooms": 1,
+    "kitchen": 1,
+    "living_room": 1
+  }
+}

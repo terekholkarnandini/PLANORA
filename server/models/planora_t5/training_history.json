@@ -1,0 +1,58 @@
+{
+  "model_name": "google/flan-t5-small",
+  "epochs": 8,
+  "batch_size": 8,
+  "learning_rate": 0.0005,
+  "best_val_loss": 0.14079940877854824,
+  "total_training_time": 5226.246510505676,
+  "history": [
+    {
+      "epoch": 1,
+      "train_loss": 1.5740595795214176,
+      "val_loss": 0.6704893708229065,
+      "time_seconds": 1507.48406291008
+    },
+    {
+      "epoch": 2,
+      "train_loss": 0.6600976940244436,
+      "val_loss": 0.4108375832438469,
+      "time_seconds": 444.82159447669983
+    },
+    {
+      "epoch": 3,
+      "train_loss": 0.46578989550471306,
+      "val_loss": 0.3133894354104996,
+      "time_seconds": 461.85766983032227
+    },
+    {
+      "epoch": 4,
+      "train_loss": 0.3773266226053238,
+      "val_loss": 0.24495065957307816,
+      "time_seconds": 478.2897927761078
+    },
+    {
+      "epoch": 5,
+      "train_loss": 0.3232115851715207,
+      "val_loss": 0.19733024016022682,
+      "time_seconds": 533.693149805069
+    },
+    {
+      "epoch": 6,
+      "train_loss": 0.2789108231663704,
+      "val_loss": 0.16561845690011978,
+      "time_seconds": 570.7999713420868
+    },
+    {
+      "epoch": 7,
+      "train_loss": 0.25234820833429694,
+      "val_loss": 0.14957858063280582,
+      "time_seconds": 638.0442297458649
+    },
+    {
+      "epoch": 8,
+      "train_loss": 0.23629162460565567,
+      "val_loss": 0.14079940877854824,
+      "time_seconds": 585.9878723621368
+    }
+  ]
+}

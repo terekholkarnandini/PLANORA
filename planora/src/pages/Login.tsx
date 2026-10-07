@@ -46,7 +46,7 @@ const Login: React.FC = () => {
         return
       }
 
-      navigate('/onboarding')
+      navigate('/welcome')
     } catch {
       setError('AN UNEXPECTED ERROR OCCURRED. PLEASE TRY AGAIN.')
     } finally {
