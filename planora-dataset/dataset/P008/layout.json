@@ -1,0 +1,101 @@
+{
+  "plot": {
+    "width": 20.0,
+    "length": 40.0
+  },
+  "rooms": [
+    {
+      "name": "Living Room",
+      "room": "Living Room",
+      "type": "living_room",
+      "x": 9.0,
+      "y": 0.0,
+      "width": 11.0,
+      "height": 14.0
+    },
+    {
+      "name": "Kitchen",
+      "room": "Kitchen",
+      "type": "kitchen",
+      "x": 0.0,
+      "y": 0.0,
+      "width": 9.0,
+      "height": 14.0
+    },
+    {
+      "name": "Bedroom 2",
+      "room": "Bedroom 2",
+      "type": "bedroom",
+      "x": 8.0,
+      "y": 14.0,
+      "width": 12.0,
+      "height": 13.0
+    },
+    {
+      "name": "Bathroom",
+      "room": "Bathroom",
+      "type": "bathroom",
+      "x": 0.0,
+      "y": 14.0,
+      "width": 8.0,
+      "height": 13.0
+    },
+    {
+      "name": "Bedroom 1",
+      "room": "Bedroom 1",
+      "type": "bedroom",
+      "x": 0.0,
+      "y": 27.0,
+      "width": 20.0,
+      "height": 13.0
+    }
+  ],
+  "doors": [
+    {
+      "room_a": "Exterior",
+      "room_b": "Living Room",
+      "x": 11.5,
+      "y": 0.0,
+      "width": 3.0,
+      "orientation": "horizontal",
+      "swing": "inward"
+    },
+    {
+      "room_a": "Living Room",
+      "room_b": "Kitchen",
+      "x": 9.0,
+      "y": 0.5,
+      "width": 2.5,
+      "orientation": "vertical",
+      "swing": "inward"
+    },
+    {
+      "room_a": "Living Room",
+      "room_b": "Bedroom 2",
+      "x": 9.5,
+      "y": 14.0,
+      "width": 2.5,
+      "orientation": "horizontal",
+      "swing": "inward"
+    },
+    {
+      "room_a": "Kitchen",
+      "room_b": "Bathroom",
+      "x": 0.5,
+      "y": 14.0,
+      "width": 2.5,
+      "orientation": "horizontal",
+      "swing": "inward"
+    },
+    {
+      "room_a": "Bedroom 2",
+      "room_b": "Bedroom 1",
+      "x": 8.5,
+      "y": 27.0,
+      "width": 2.5,
+      "orientation": "horizontal",
+      "swing": "inward"
+    }
+  ],
+  "archetype": "open_concept_front_living_linear_core_mirrored"
+}

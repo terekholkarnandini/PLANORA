@@ -1,0 +1,11 @@
+plan_id,archetype,plot_width,plot_length,plot_area,bedrooms_count,bathrooms_count,rooms_count,doors_count,is_valid,bathroom_1_area,bathroom_2_area,bathroom_3_area,bedroom_1_area,bedroom_2_area,bedroom_3_area,bedroom_4_area,kitchen_area,living_room_area
+P001,4bed_3bath_luxury_estate_mirrored,40.0,60.0,2400.0,4,3,9,9,True,168.0,72.0,112.0,480.0,480.0,196.0,252.0,256.0,384.0
+P002,4bed_3bath_luxury_estate_mirrored,40.0,60.0,2400.0,4,3,9,9,True,168.0,72.0,112.0,480.0,480.0,196.0,252.0,256.0,384.0
+P003,4bed_3bath_luxury_estate_mirrored,40.0,60.0,2400.0,4,3,9,9,True,168.0,72.0,112.0,480.0,480.0,196.0,252.0,256.0,384.0
+P004,4bed_3bath_luxury_estate,40.0,60.0,2400.0,4,3,9,9,True,168.0,72.0,112.0,480.0,480.0,196.0,252.0,256.0,384.0
+P005,4bed_3bath_luxury_estate_mirrored,40.0,60.0,2400.0,4,3,9,9,True,168.0,72.0,112.0,480.0,480.0,196.0,252.0,256.0,384.0
+P006,4bed_3bath_luxury_estate,40.0,60.0,2400.0,4,3,9,9,True,168.0,72.0,112.0,480.0,480.0,196.0,252.0,256.0,384.0
+P007,4bed_3bath_luxury_estate_mirrored,40.0,60.0,2400.0,4,3,9,9,True,168.0,72.0,112.0,480.0,480.0,196.0,252.0,256.0,384.0
+P008,4bed_3bath_luxury_estate,40.0,60.0,2400.0,4,3,9,9,True,168.0,72.0,112.0,480.0,480.0,196.0,252.0,256.0,384.0
+P009,4bed_3bath_luxury_estate,40.0,60.0,2400.0,4,3,9,9,True,168.0,72.0,112.0,480.0,480.0,196.0,252.0,256.0,384.0
+P010,4bed_3bath_luxury_estate_mirrored,40.0,60.0,2400.0,4,3,9,9,True,168.0,72.0,112.0,480.0,480.0,196.0,252.0,256.0,384.0
