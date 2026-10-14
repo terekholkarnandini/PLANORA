@@ -30,6 +30,34 @@ from server.services.renderer import render_floor_plan_svg
 from training.dataset_loader import compute_exterior_windows
 
 
+def format_confirmation_summary(req: Dict[str, Any]) -> str:
+    plot = req.get("plot", {})
+    rooms = req.get("rooms", {})
+    w = int(plot.get("width", 30))
+    l = int(plot.get("length", 40))
+    beds = int(rooms.get("bedrooms", 2))
+    baths = int(rooms.get("bathrooms", 2))
+    kitchen = int(rooms.get("kitchen", 1))
+    living = int(rooms.get("living_room", 1))
+    dining = int(rooms.get("dining_room", 0))
+    balcony = int(rooms.get("balcony", 0))
+    parking = int(rooms.get("parking", 0))
+
+    parts = [
+        f"{w}×{l} FT plot",
+        f"{beds} bedroom{'s' if beds != 1 else ''}",
+        f"{baths} bathroom{'s' if baths != 1 else ''}",
+        f"{kitchen} kitchen",
+        f"{living} living room",
+    ]
+    if dining > 0:
+        parts.append(f"{dining} dining room")
+    parts.append("balcony included" if balcony > 0 else "balcony excluded")
+    parts.append("parking included" if parking > 0 else "parking excluded")
+
+    return f"Plan generated using your final requirements: {', '.join(parts)}."
+
+
 class PlanoraModelService:
     """Singleton service managing T5 model lifecycle and inference pipeline."""
 
@@ -58,23 +86,28 @@ class PlanoraModelService:
         self.model.eval()
         print("[*] PlanoraModelService model ready.")
 
-    def generate(self, prompt: str) -> Dict[str, Any]:
+    def generate(self, prompt: str, user_requirements: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
         """
         Executes end-to-end plan generation pipeline.
+        Single source of truth: user_requirements if provided, otherwise parsed from prompt.
         """
         prompt = prompt.strip()
-        if not prompt:
+        if not prompt and not user_requirements:
             return {
                 "success": False,
                 "error": "Empty prompt provided",
                 "validation": {"valid": False, "errors": ["No prompt provided"], "warnings": []}
             }
 
-        # 1. Extract requirements from user prompt
-        requirements = extract_requirements_from_prompt(prompt)
+        # 1. Establish single source of truth requirements
+        if user_requirements:
+            requirements = user_requirements
+        else:
+            requirements = extract_requirements_from_prompt(prompt)
 
         # 2. T5 Model Generation
-        inputs = self.tokenizer(prompt, return_tensors="pt", max_length=128, truncation=True)
+        model_prompt = prompt if prompt else f"{requirements['plot']['width']}x{requirements['plot']['length']} ft house"
+        inputs = self.tokenizer(model_prompt, return_tensors="pt", max_length=128, truncation=True)
         inputs = {k: v.to(self.device) for k, v in inputs.items()}
 
         with torch.no_grad():
@@ -94,7 +127,6 @@ class PlanoraModelService:
 
         # If layout is empty or missing rooms, construct initial architectural layout from requirements
         if not layout or not layout.get("rooms"):
-            # Provide base layout structure respecting plot and rooms requested
             pw = requirements["plot"]["width"]
             pl = requirements["plot"]["length"]
             layout = {
@@ -104,7 +136,7 @@ class PlanoraModelService:
                 "windows": []
             }
 
-        # Ensure plot dimensions match prompt requirements
+        # Ensure plot dimensions match confirmed requirements
         layout["plot"]["width"] = requirements["plot"]["width"]
         layout["plot"]["length"] = requirements["plot"]["length"]
         layout["plot"]["height"] = requirements["plot"]["length"]
@@ -118,7 +150,7 @@ class PlanoraModelService:
                 layout.get("doors", [])
             )
 
-        # 5. Constraint Validation & Repair Engine
+        # 5. Constraint Validation & Repair Engine strictly using confirmed requirements
         final_layout, val_report, was_repaired = repair_layout(layout, requirements)
 
         # Ensure exterior windows are up to date with final room bounds
@@ -132,6 +164,7 @@ class PlanoraModelService:
 
         # 6. SVG Blueprint Rendering
         svg_blueprint = render_floor_plan_svg(final_layout, plan_title=f"{prompt[:38]}...")
+        summary = format_confirmation_summary(requirements)
 
         return {
             "success": val_report["valid"],
@@ -141,7 +174,8 @@ class PlanoraModelService:
             "layout": final_layout,
             "validation": val_report,
             "svg": svg_blueprint,
-            "was_repaired": was_repaired
+            "was_repaired": was_repaired,
+            "confirmation_summary": summary
         }
 
 

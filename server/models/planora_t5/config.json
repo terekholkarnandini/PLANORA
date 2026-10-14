@@ -56,7 +56,7 @@
       "prefix": "translate English to Romanian: "
     }
   },
-  "tie_word_embeddings": true,
+  "tie_word_embeddings": false,
   "transformers_version": "5.14.1",
   "use_cache": true,
   "vocab_size": 32128

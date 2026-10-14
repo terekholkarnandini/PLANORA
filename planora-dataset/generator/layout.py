@@ -248,8 +248,13 @@ class LayoutGenerator:
             rooms, arch_name = self._generate_dining_balcony_layout(plot_w, plot_l, n_beds, n_baths, rng)
         elif has_dining:
             rooms, arch_name = self._generate_dining_balcony_layout(plot_w, plot_l, n_beds, n_baths, rng)
+        elif has_balcony:
+            if n_beds == 1:
+                rooms, arch_name = self._generate_1bed_layout(plot_w, plot_l, has_balcony=True, rng=rng)
+            else:
+                rooms, arch_name = self._generate_balcony_layout(plot_w, plot_l, n_beds, n_baths, rng)
         elif n_beds == 1:
-            rooms, arch_name = self._generate_1bed_layout(plot_w, plot_l, rng)
+            rooms, arch_name = self._generate_1bed_layout(plot_w, plot_l, has_balcony=False, rng=rng)
         elif n_beds == 2 and n_baths >= 2:
             rooms, arch_name = self._generate_2bed_2bath_layout(plot_w, plot_l, rng)
         elif n_beds == 3:
@@ -318,16 +323,27 @@ class LayoutGenerator:
         w_kit = W * 0.5
         w_baths = W - w_kit
 
-        rooms = [
-            Room("Living Room", "living_room", 0.0, 0.0, w_liv, y_front),
-            Room("Dining Room", "dining_room", w_liv, 0.0, w_din, y_front),
-            Room("Kitchen", "kitchen", 0.0, y_front, w_kit, y_mid_h),
-            Room("Bathroom 2", "bathroom", w_kit, y_front, w_baths / 2.0, y_mid_h),
-            Room("Bathroom 1", "bathroom", w_kit + (w_baths / 2.0), y_front, w_baths / 2.0, y_mid_h),
-            Room("Bedroom 2", "bedroom", 0.0, y_rear_start, W / 2.0, rear_depth),
-            Room("Bedroom 1", "bedroom", W / 2.0, y_rear_start, W / 2.0, h_bed1),
-            Room("Balcony", "balcony", W / 2.0, y_rear_start + h_bed1, W / 2.0, h_balcony),
-        ]
+        if n_baths > 1:
+            rooms = [
+                Room("Living Room", "living_room", 0.0, 0.0, w_liv, y_front),
+                Room("Dining Room", "dining_room", w_liv, 0.0, w_din, y_front),
+                Room("Kitchen", "kitchen", 0.0, y_front, w_kit, y_mid_h),
+                Room("Bathroom 2", "bathroom", w_kit, y_front, w_baths / 2.0, y_mid_h),
+                Room("Bathroom 1", "bathroom", w_kit + (w_baths / 2.0), y_front, w_baths / 2.0, y_mid_h),
+                Room("Bedroom 2", "bedroom", 0.0, y_rear_start, W / 2.0, rear_depth),
+                Room("Bedroom 1", "bedroom", W / 2.0, y_rear_start, W / 2.0, h_bed1),
+                Room("Balcony", "balcony", W / 2.0, y_rear_start + h_bed1, W / 2.0, h_balcony),
+            ]
+        else:
+            rooms = [
+                Room("Living Room", "living_room", 0.0, 0.0, w_liv, y_front),
+                Room("Dining Room", "dining_room", w_liv, 0.0, w_din, y_front),
+                Room("Kitchen", "kitchen", 0.0, y_front, w_kit, y_mid_h),
+                Room("Bathroom", "bathroom", w_kit, y_front, w_baths, y_mid_h),
+                Room("Bedroom 2", "bedroom", 0.0, y_rear_start, W / 2.0, rear_depth),
+                Room("Bedroom 1", "bedroom", W / 2.0, y_rear_start, W / 2.0, h_bed1),
+                Room("Balcony", "balcony", W / 2.0, y_rear_start + h_bed1, W / 2.0, h_balcony),
+            ]
         return rooms, "2bed_dining_master_balcony_suite"
 
     def _generate_4bed_villa_parking_balcony_layout(self, W: float, L: float, rng: random.Random) -> Tuple[List[Room], str]:
@@ -453,16 +469,30 @@ class LayoutGenerator:
     # --------------------------------------------------------------------------
     # 1 BEDROOM, 1 BATHROOM (Studio / 1-BHK)
     # --------------------------------------------------------------------------
-    def _generate_1bed_layout(self, W: float, L: float, rng: random.Random) -> Tuple[List[Room], str]:
+    def _generate_1bed_layout(self, W: float, L: float, has_balcony: bool = False, rng: Optional[random.Random] = None) -> Tuple[List[Room], str]:
+        if rng is None:
+            rng = random.Random()
         y_split = rng.choice([L * 0.45, L * 0.5])
         w_bed = max(11.0, W * 0.6)
         w_bath = W - w_bed
+        rear_h = L - y_split
+
+        if has_balcony:
+            h_balcony = 5.0
+            rooms = [
+                Room("Living Room", "living_room", 0.0, 0.0, max(12.0, W * 0.6), y_split),
+                Room("Kitchen", "kitchen", max(12.0, W * 0.6), 0.0, W - max(12.0, W * 0.6), y_split),
+                Room("Bedroom 1", "bedroom", 0.0, y_split, w_bed, rear_h - h_balcony),
+                Room("Balcony", "balcony", 0.0, L - h_balcony, w_bed, h_balcony),
+                Room("Bathroom", "bathroom", w_bed, y_split, w_bath, rear_h),
+            ]
+            return rooms, "1bed_suite_open_living_balcony"
 
         rooms = [
             Room("Living Room", "living_room", 0.0, 0.0, max(12.0, W * 0.6), y_split),
             Room("Kitchen", "kitchen", max(12.0, W * 0.6), 0.0, W - max(12.0, W * 0.6), y_split),
-            Room("Bedroom 1", "bedroom", 0.0, y_split, w_bed, L - y_split),
-            Room("Bathroom", "bathroom", w_bed, y_split, w_bath, L - y_split),
+            Room("Bedroom 1", "bedroom", 0.0, y_split, w_bed, rear_h),
+            Room("Bathroom", "bathroom", w_bed, y_split, w_bath, rear_h),
         ]
         return rooms, "1bed_suite_open_living"
 

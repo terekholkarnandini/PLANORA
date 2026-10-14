@@ -19,6 +19,10 @@ class PlanGenerationRequest(BaseModel):
         description="Natural language spatial requirements (e.g. '30x40 ft house with 2 bedrooms, 2 bathrooms, kitchen and parking')",
         example="30x40 ft house with 2 bedrooms, 2 bathrooms, 1 kitchen, 1 living room, 1 dining room and parking"
     )
+    requirements: Optional[Dict[str, Any]] = Field(
+        default=None,
+        description="Optional structured single-source-of-truth requirements state"
+    )
 
 
 class PlanGenerationResponse(BaseModel):
@@ -29,6 +33,7 @@ class PlanGenerationResponse(BaseModel):
     validation: Dict[str, Any]
     svg: str
     was_repaired: Optional[bool] = False
+    confirmation_summary: Optional[str] = None
 
 
 @router.post("/generate-plan", response_model=PlanGenerationResponse)
@@ -40,7 +45,7 @@ async def generate_plan_endpoint(request: PlanGenerationRequest):
     """
     try:
         service = get_model_service()
-        result = service.generate(request.prompt)
+        result = service.generate(request.prompt, user_requirements=request.requirements)
 
         return PlanGenerationResponse(
             success=result["success"],
@@ -49,7 +54,8 @@ async def generate_plan_endpoint(request: PlanGenerationRequest):
             layout=result["layout"],
             validation=result["validation"],
             svg=result["svg"],
-            was_repaired=result.get("was_repaired", False)
+            was_repaired=result.get("was_repaired", False),
+            confirmation_summary=result.get("confirmation_summary")
         )
     except Exception as exc:
         raise HTTPException(

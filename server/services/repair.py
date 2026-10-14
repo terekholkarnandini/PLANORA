@@ -179,12 +179,35 @@ def repair_layout(
             print("Layout synthesis exception:", exc)
             return layout, initial_val, False
 
+    # Prune unwanted or excess rooms not matching requirements
+    if requirements and "rooms" in requirements:
+        req_rooms = requirements["rooms"]
+        pruned_rooms = []
+        type_counts: Dict[str, int] = {}
+        for r in rooms:
+            rtype = r.get("type", "").lower().strip()
+            norm_type = "living_room" if "living" in rtype else ("bathroom" if "bath" in rtype else rtype.rstrip("s"))
+            expected_c = req_rooms.get(norm_type, req_rooms.get(norm_type + "s", 0))
+            current_c = type_counts.get(norm_type, 0)
+            if current_c < expected_c:
+                pruned_rooms.append(r)
+                type_counts[norm_type] = current_c + 1
+            elif expected_c == 0:
+                # Omit completely
+                continue
+            else:
+                # Excess room, skip adding
+                continue
+        if len(pruned_rooms) != len(rooms):
+            rooms = pruned_rooms
+            candidate["rooms"] = rooms
+
     pass1 = clamp_to_boundary(rooms, plot_w, plot_l)
     pass2 = resolve_overlaps(rooms, plot_w, plot_l)
     pass3 = repair_room_dimensions(rooms, plot_w, plot_l)
     pass4 = clamp_to_boundary(rooms, plot_w, plot_l)
 
-    repaired = pass1 or pass2 or pass3 or pass4
+    repaired = pass1 or pass2 or pass3 or pass4 or (len(rooms) != len(layout.get("rooms", [])))
 
     repaired_val = validate_floor_plan(candidate, requirements)
 
@@ -201,7 +224,7 @@ def repair_layout(
                     "length": plot_l,
                     "unit": "ft"
                 },
-                "rooms": requirements.get("rooms", {}) if requirements else {
+                "rooms": deepcopy(requirements.get("rooms", {})) if requirements else {
                     "bedrooms": 2, "bathrooms": 1, "kitchen": 1, "living_room": 1
                 }
             }

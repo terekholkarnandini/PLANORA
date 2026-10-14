@@ -98,14 +98,18 @@ def validate_floor_plan(layout: Dict[str, Any], requirements: Optional[Dict[str,
     if requirements and "rooms" in requirements:
         req_rooms = requirements["rooms"]
         for req_type, expected_count in req_rooms.items():
+            norm_req = "living_room" if "living" in req_type else ("bathroom" if "bath" in req_type else req_type.rstrip("s"))
+            actual_c = actual_counts.get(norm_req, 0)
             if expected_count > 0:
-                # normalize key
-                norm_req = "living_room" if "living" in req_type else ("bathroom" if "bath" in req_type else req_type.rstrip("s"))
-                actual_c = actual_counts.get(norm_req, 0)
                 if actual_c == 0:
                     errors.append(f"Required room type missing: {req_type.replace('_', ' ').title()}.")
                 elif actual_c < expected_count:
                     errors.append(f"Room count deficit: Expected {expected_count} {req_type}, found {actual_c}.")
+                elif actual_c > expected_count:
+                    errors.append(f"Room count excess: Expected {expected_count} {req_type}, found {actual_c}.")
+            elif expected_count == 0:
+                if actual_c > 0:
+                    errors.append(f"Excluded room present in layout: {req_type.replace('_', ' ').title()} was not requested.")
 
     # 5 & 6. Minimum & Maximum Room Dimensions
     for r in rooms:
@@ -137,9 +141,12 @@ def validate_floor_plan(layout: Dict[str, Any], requirements: Optional[Dict[str,
                 errors.append(f"{name} total area ({area:.1f} sq ft) is below minimum of {min_a} sq ft.")
 
     # 7. Parking Requirement Check
-    if requirements and requirements.get("rooms", {}).get("parking", 0) > 0:
-        if actual_counts.get("parking", 0) == 0:
+    if requirements and "rooms" in requirements:
+        req_pkg = requirements["rooms"].get("parking", 0)
+        if req_pkg > 0 and actual_counts.get("parking", 0) == 0:
             errors.append("Parking was requested by user but is missing from generated layout.")
+        elif req_pkg == 0 and actual_counts.get("parking", 0) > 0:
+            errors.append("Parking was excluded by user but is present in generated layout.")
 
     # 8. Connectivity / Circulation Adjacency Check
     # Build shared wall adjacency graph

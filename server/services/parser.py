@@ -92,22 +92,30 @@ def extract_requirements_from_prompt(prompt: str) -> Dict[str, Any]:
             else:
                 plot_w, plot_l = 40.0, 60.0
 
+    def is_negated(kw: str) -> bool:
+        neg_patterns = [
+            rf"(?:no|without|remove|don't want|do not want|exclude|omit|drop|zero|0)\s+(?:the\s+|a\s+|an\s+)?{kw}",
+            rf"{kw}\s+(?:excluded|omitted|removed|not needed|not required)"
+        ]
+        return any(re.search(pat, clean_p) for pat in neg_patterns)
+
     # 2. Room counts extraction helper
     def count_for_keywords(keywords: List[str], default: int = 0) -> int:
         for kw in keywords:
-            # Look for number before keyword, e.g., "2 bedrooms", "3 bhk", "1 kitchen"
-            pattern = rf"(\d+)\s*(?:-|–)?\s*(?:bhk|bed|beds|bedroom|bedrooms|bath|baths|bathroom|bathrooms|kitchen|kitchens|living|dining|balcony|parking|utility|study)?"
-            m = re.search(rf"(\d+)\s+{kw}", clean_p)
+            if is_negated(kw):
+                return 0
+            # Look for number before keyword, e.g., "2 bedrooms", "3 bhk", "1 kitchen", "1 bathroom only"
+            m = re.search(rf"(?:make it|only|just|set to)?\s*(\d+)\s*(?:-|–)?\s*{kw}", clean_p)
             if m:
                 return int(m.group(1))
-            # Check "two bedrooms", "three bedrooms"
-            words = {"one": 1, "two": 2, "three": 3, "four": 4, "five": 5}
+            # Check "one bedroom", "single bathroom"
+            words = {"one": 1, "single": 1, "two": 2, "three": 3, "four": 4, "five": 5}
             for w, n in words.items():
                 if f"{w} {kw}" in clean_p:
                     return n
 
             # Check if mentioned without number, e.g., "with kitchen and parking"
-            if kw in clean_p:
+            if kw in clean_p and not is_negated(kw):
                 return max(1, default)
         return default
 
@@ -119,11 +127,12 @@ def extract_requirements_from_prompt(prompt: str) -> Dict[str, Any]:
     baths = count_for_keywords(["bathroom", "bathrooms", "bath", "baths", "toilet"], default=1)
     kitchen = count_for_keywords(["kitchen", "kitchens"], default=1)
     living = count_for_keywords(["living room", "living", "hall"], default=1)
-    dining = 1 if any(k in clean_p for k in ["dining", "dining room"]) else 0
-    balcony = 1 if any(k in clean_p for k in ["balcony", "balconies"]) else 0
-    parking = 1 if any(k in clean_p for k in ["parking", "car parking", "garage", "car porch"]) else 0
-    utility = 1 if any(k in clean_p for k in ["utility", "laundry", "wash room"]) else 0
-    study = 1 if any(k in clean_p for k in ["study", "study room", "office", "work room"]) else 0
+
+    dining = 0 if is_negated("dining") else (1 if any(k in clean_p for k in ["dining", "dining room"]) else 0)
+    balcony = 0 if is_negated("balcony") else (1 if any(k in clean_p for k in ["balcony", "balconies"]) else 0)
+    parking = 0 if (is_negated("parking") or is_negated("garage") or "no pkg" in clean_p) else (1 if any(k in clean_p for k in ["parking", "car parking", "garage", "car porch"]) else 0)
+    utility = 0 if is_negated("utility") else (1 if any(k in clean_p for k in ["utility", "laundry", "wash room"]) else 0)
+    study = 0 if is_negated("study") else (1 if any(k in clean_p for k in ["study", "study room", "office", "work room"]) else 0)
 
     return {
         "plot": {
@@ -135,8 +144,8 @@ def extract_requirements_from_prompt(prompt: str) -> Dict[str, Any]:
         "rooms": {
             "bedrooms": beds,
             "bathrooms": baths,
-            "kitchen": max(1, kitchen),
-            "living_room": max(1, living),
+            "kitchen": max(1, kitchen) if not is_negated("kitchen") else 0,
+            "living_room": max(1, living) if not is_negated("living") else 0,
             "dining_room": dining,
             "balcony": balcony,
             "parking": parking,

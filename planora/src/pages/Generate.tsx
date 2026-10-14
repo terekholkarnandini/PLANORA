@@ -9,6 +9,8 @@ import {
   Building
 } from 'lucide-react'
 import '../styles/AuthOnboarding.css'
+import FloorPlan3DViewer from '../components/FloorPlan3DViewer'
+
 
 interface RoomItem {
   name: string
@@ -37,7 +39,7 @@ interface PlanGenerationResult {
   success: boolean
   prompt: string
   requirements: {
-    plot: { width: number; length: number; height: number; unit: string }
+    plot: { width: number; length: number; height: number; unit: string; floors?: number }
     rooms: Record<string, number>
   }
   layout: {
@@ -49,10 +51,11 @@ interface PlanGenerationResult {
   validation: ValidationReport
   svg: string
   was_repaired?: boolean
+  confirmation_summary?: string
 }
 
 interface StructuredRequirements {
-  plot: { width: number; length: number; height: number; unit: string }
+  plot: { width: number; length: number; height: number; unit: string; floors: number }
   rooms: {
     bedrooms: number
     bathrooms: number
@@ -82,12 +85,44 @@ const SAMPLE_PROMPTS = [
   '20x30 ft compact home with 1 bedroom, 1 bathroom, kitchen and living room',
 ]
 
-function parseRequirementsFromText(text: string): StructuredRequirements {
+function parseWordNumber(str: string): number | null {
+  const s = str.toLowerCase().trim()
+  const map: Record<string, number> = {
+    zero: 0,
+    one: 1,
+    single: 1,
+    two: 2,
+    double: 2,
+    three: 3,
+    triple: 3,
+    four: 4,
+    five: 5,
+    six: 6,
+  }
+  if (map[s] !== undefined) return map[s]
+  const n = parseInt(s, 10)
+  return isNaN(n) ? null : n
+}
+
+function formatFinalSummary(req: StructuredRequirements): string {
+  const parts: string[] = [
+    `${req.plot.width}×${req.plot.length} FT plot`,
+    `${req.rooms.bedrooms} bedroom${req.rooms.bedrooms !== 1 ? 's' : ''}`,
+    `${req.rooms.bathrooms} bathroom${req.rooms.bathrooms !== 1 ? 's' : ''}`,
+    `${req.rooms.kitchen} kitchen`,
+    `${req.rooms.living_room} living room`,
+  ]
+  if (req.rooms.dining_room > 0) parts.push(`${req.rooms.dining_room} dining room`)
+  parts.push(req.rooms.balcony > 0 ? 'balcony included' : 'balcony excluded')
+  parts.push(req.rooms.parking > 0 ? 'parking included' : 'parking excluded')
+  return parts.join(', ')
+}
+
+function parseInitialRequirements(text: string): StructuredRequirements {
   const clean = text.toLowerCase()
   let width = 30
   let length = 40
 
-  // 1. Plot dimensions
   const dimMatch = clean.match(/(\d+)\s*(?:x|by|\*)\s*(\d+)/i)
   if (dimMatch) {
     width = parseInt(dimMatch[1], 10)
@@ -105,53 +140,76 @@ function parseRequirementsFromText(text: string): StructuredRequirements {
     }
   }
 
-  // 2. Bedrooms
-  let bedrooms = 0
-  const bedMatch = clean.match(/(\d+)\s*(?:bhk|bed|beds|bedroom|bedrooms)/i)
-  if (bedMatch) bedrooms = parseInt(bedMatch[1], 10)
-  else if (clean.includes('bedroom') || clean.includes('bed')) bedrooms = 1
+  // Floors
+  let floors = 1
+  const floorMatch = clean.match(/(\d+|single|double|two|three)\s*(?:floor|floors|storey|story)/i)
+  if (floorMatch) {
+    const fn = parseWordNumber(floorMatch[1])
+    if (fn) floors = fn
+  }
 
-  // 3. Bathrooms
-  let bathrooms = 0
-  const bathMatch = clean.match(/(\d+)\s*(?:bath|baths|bathroom|bathrooms|toilet|toilets|washroom|wc)/i)
-  if (bathMatch) bathrooms = parseInt(bathMatch[1], 10)
-  else if (clean.includes('bath') || clean.includes('toilet') || clean.includes('washroom')) bathrooms = 1
+  // Bedrooms
+  let bedrooms = 2
+  const bedCountMatch = clean.match(/(\d+|one|single|two|three|four|five)\s*(?:bhk|bed|beds|bedroom|bedrooms)/i)
+  if (bedCountMatch) {
+    const parsed = parseWordNumber(bedCountCountOrFallback(bedCountMatch[1]))
+    if (parsed !== null) bedrooms = parsed
+  } else if (clean.includes('1 bedroom') || clean.includes('1 bed') || clean.includes('1bhk')) {
+    bedrooms = 1
+  }
 
-  // 4. Kitchen
-  let kitchen = 0
-  const kitMatch = clean.match(/(\d+)\s*kitchen/i)
-  if (kitMatch) kitchen = parseInt(kitMatch[1], 10)
-  else if (clean.includes('kitchen') || clean.includes('cooking')) kitchen = 1
+  // Bathrooms
+  let bathrooms = 2
+  const isOneBath =
+    clean.includes('1 bathroom') ||
+    clean.includes('1 bath') ||
+    clean.includes('single bathroom') ||
+    clean.includes('one bathroom') ||
+    clean.includes('1 toilet') ||
+    clean.includes('1 washroom')
+  if (isOneBath) {
+    bathrooms = 1
+  } else {
+    const bathCountMatch = clean.match(/(\d+|one|single|two|three|four)\s*(?:bath|baths|bathroom|bathrooms|toilet|toilets|washroom)/i)
+    if (bathCountMatch) {
+      const parsed = parseWordNumber(bathCountMatch[1])
+      if (parsed !== null) bathrooms = parsed
+    }
+  }
 
-  // 5. Living room
-  let living_room = 0
-  const livMatch = clean.match(/(\d+)\s*(?:living|hall)/i)
-  if (livMatch) living_room = parseInt(livMatch[1], 10)
-  else if (clean.includes('living') || clean.includes('hall') || clean.includes('lounge')) living_room = 1
+  // Kitchen
+  let kitchen = 1
+  if (clean.includes('no kitchen') || clean.includes('without kitchen')) kitchen = 0
 
-  // 6. Dining room
+  // Living Room
+  let living_room = 1
+  if (clean.includes('no living') || clean.includes('without living')) living_room = 0
+
+  // Dining
   let dining_room = 0
-  const dinMatch = clean.match(/(\d+)\s*dining/i)
-  if (dinMatch) dining_room = parseInt(dinMatch[1], 10)
-  else if (clean.includes('dining')) dining_room = 1
+  if ((clean.includes('dining') || clean.includes('dining room')) && !clean.includes('no dining') && !clean.includes('without dining')) {
+    dining_room = 1
+  }
 
-  // 7. Parking
+  // Parking
   let parking = 0
-  const parkMatch = clean.match(/(\d+)\s*(?:parking|garage|car)/i)
-  if (parkMatch) parking = parseInt(parkMatch[1], 10)
-  else if (clean.includes('parking') || clean.includes('garage') || clean.includes('car porch') || clean.includes('porch')) parking = 1
+  if ((clean.includes('parking') || clean.includes('garage') || clean.includes('car porch')) &&
+      !clean.includes('no parking') && !clean.includes('without parking') && !clean.includes('no pkg') && !clean.includes('remove parking')) {
+    parking = 1
+  }
 
-  // 8. Balcony
+  // Balcony
   let balcony = 0
-  const balcMatch = clean.match(/(\d+)\s*(?:balcony|balconies|terrace)/i)
-  if (balcMatch) balcony = parseInt(balcMatch[1], 10)
-  else if (clean.includes('balcony') || clean.includes('terrace')) balcony = 1
+  if ((clean.includes('balcony') || clean.includes('terrace')) &&
+      !clean.includes('no balcony') && !clean.includes('without balcony') && !clean.includes('remove balcony')) {
+    balcony = 1
+  }
 
   return {
-    plot: { width, length, height: 10, unit: 'ft' },
+    plot: { width, length, height: 10, unit: 'ft', floors },
     rooms: {
-      bedrooms: bedrooms || (clean.trim() ? 2 : 0),
-      bathrooms: bathrooms || (clean.trim() ? 2 : 0),
+      bedrooms,
+      bathrooms,
       kitchen,
       living_room,
       dining_room,
@@ -161,6 +219,10 @@ function parseRequirementsFromText(text: string): StructuredRequirements {
       study_room: 0,
     },
   }
+}
+
+function bedCountCountOrFallback(val: string): string {
+  return val
 }
 
 function compilePromptFromRequirements(req: StructuredRequirements): string {
@@ -178,12 +240,278 @@ function compilePromptFromRequirements(req: StructuredRequirements): string {
   if (req.rooms.study_room > 0) roomParts.push(`${req.rooms.study_room} study room`)
 
   if (roomParts.length === 0) {
-    return `${req.plot.width}x${req.plot.length} ft house with 2 bedrooms, 2 bathrooms, 1 kitchen, 1 living room, 1 dining room and parking`
+    return `${req.plot.width}x${req.plot.length} ft house with 2 bedrooms, 1 bathroom, 1 kitchen, 1 living room`
   }
 
   if (roomParts.length === 1) return `${parts[0]} ${roomParts[0]}`
   const last = roomParts.pop()
   return `${parts[0]} ${roomParts.join(', ')} and ${last}`
+}
+
+function processConversationalInput(
+  userText: string,
+  currentReq: StructuredRequirements | null,
+  decidedTopics: string[]
+): {
+  updatedRequirements: StructuredRequirements
+  aiReply: string
+  suggestions: string[]
+  isCompletion: boolean
+  newDecidedTopics: string[]
+} {
+  const clean = userText.toLowerCase().trim()
+  const decidedSet = new Set(decidedTopics)
+
+  // 1. Meta-Question / Customization inquiry
+  const isMetaQuery =
+    /^(?:can|could|is it possible to|how do i)\s+(?:i\s+)?(?:exclude|remove|omit|change|modify|add|customise|customize)/i.test(clean) ||
+    (/(?:exclude|remove|omit)\s+(?:anything|something|any room)/i.test(clean) && clean.includes('?')) ||
+    clean === 'can i exclude something?' ||
+    clean === 'can i exclude something' ||
+    clean === 'can i remove something?' ||
+    clean === 'can i remove something'
+
+  if (isMetaQuery) {
+    const baseReq = currentReq || {
+      plot: { width: 30, length: 40, height: 10, unit: 'ft', floors: 1 },
+      rooms: { bedrooms: 2, bathrooms: 2, kitchen: 1, living_room: 1, dining_room: 0, parking: 0, balcony: 0, utility: 0, study_room: 0 }
+    }
+    return {
+      updatedRequirements: baseReq,
+      aiReply: "Yes, absolutely! You can add, remove, or modify any architectural requirement at any point—such as saying 'remove parking', 'make it 1 bathroom', 'add balcony', 'I don't want a dining room', or changing plot dimensions. What would you like to adjust?",
+      suggestions: ['Remove Parking', 'Make it 1 Bathroom', 'Include Balcony', 'Keep Everything'],
+      isCompletion: false,
+      newDecidedTopics: decidedTopics,
+    }
+  }
+
+  // 2. Completion triggers
+  const isCompletion =
+    /^(?:done|that'?s all|thats all|generate(?: it)?|generate the plan|create plan|make plan|looks good|ready|proceed|let'?s generate|lets generate)\.?$/i.test(clean) ||
+    /\b(?:done|that'?s all|generate it)\b/i.test(clean)
+
+  if (isCompletion) {
+    const finalReq = currentReq || parseInitialRequirements('30x40 ft house with 2 bedrooms and 2 bathrooms')
+    const w = finalReq.plot.width
+    const l = finalReq.plot.length
+    const bed = finalReq.rooms.bedrooms
+    const bath = finalReq.rooms.bathrooms
+    const kit = finalReq.rooms.kitchen
+    const liv = finalReq.rooms.living_room
+    const balc = finalReq.rooms.balcony > 0
+    const park = finalReq.rooms.parking > 0
+    const din = finalReq.rooms.dining_room > 0
+
+    const reply = `Understood. Here is your final validated architectural program:\n\n• Plot: ${w}×${l} FT (${w * l} sq.ft)\n• Program: ${bed} Bed, ${bath} Bath, ${kit} Kitchen, ${liv} Living\n• Amenities: ${balc ? 'Balcony included' : 'Balcony excluded'}, ${park ? 'Parking included' : 'Parking excluded'}${din ? ', Dining included' : ''}\n\nAll constraints and space allocations are validated. Click 'Generate Floor Plan' below to synthesize your blueprint.`
+
+    return {
+      updatedRequirements: finalReq,
+      aiReply: reply,
+      suggestions: ['⚡ Generate Floor Plan', 'Review Parameters'],
+      isCompletion: true,
+      newDecidedTopics: decidedTopics,
+    }
+  }
+
+  // 3. "Keep everything else the same"
+  const isKeepSame =
+    /(?:keep everything|keep the rest|keep remaining|leave everything|no other change|nothing else|same as is|keep it as is)/i.test(clean)
+
+  if (isKeepSame && currentReq) {
+    return {
+      updatedRequirements: currentReq,
+      aiReply: `Noted. Keeping all remaining parameters locked: ${formatFinalSummary(currentReq)}. Ready to generate whenever you like!`,
+      suggestions: ['Done, Generate Plan', 'Review Parameters'],
+      isCompletion: false,
+      newDecidedTopics: decidedTopics,
+    }
+  }
+
+  // 4. Initial request or incremental modification
+  const updated: StructuredRequirements = currentReq
+    ? JSON.parse(JSON.stringify(currentReq))
+    : parseInitialRequirements(userText)
+
+  const changes: string[] = []
+
+  if (!currentReq) {
+    // Brand new state
+    if (clean.includes('bhk') || clean.includes('bed')) decidedSet.add('bedrooms')
+    if (clean.includes('bath') || clean.includes('toilet')) decidedSet.add('bathrooms')
+    if (clean.includes('parking') || clean.includes('garage')) decidedSet.add('parking')
+    if (clean.includes('balcony') || clean.includes('terrace')) decidedSet.add('balcony')
+    if (clean.includes('dining')) decidedSet.add('dining')
+    if (clean.match(/\d+\s*(?:x|by|\*)\s*\d+/i)) decidedSet.add('plot')
+  } else {
+    // Incremental modifications: Never revert unchanged fields!
+
+    // A. Plot dimensions
+    const dimMatch = clean.match(/(\d+)\s*(?:x|by|\*)\s*(\d+)/i)
+    if (dimMatch) {
+      const w = parseInt(dimMatch[1], 10)
+      const l = parseInt(dimMatch[2], 10)
+      if (w !== updated.plot.width || l !== updated.plot.length) {
+        updated.plot.width = w
+        updated.plot.length = l
+        changes.push(`plot size updated to ${w}×${l} FT`)
+        decidedSet.add('plot')
+      }
+    }
+
+    // Floors
+    const floorM = clean.match(/(\d+|single|double|two|three)\s*(?:floor|floors|storey|story)/i)
+    if (floorM) {
+      const fn = parseWordNumber(floorM[1])
+      if (fn && fn !== updated.plot.floors) {
+        updated.plot.floors = fn
+        changes.push(`floors set to ${fn}`)
+        decidedSet.add('floors')
+      }
+    }
+
+    // B. Bathrooms
+    if (/(?:no|without|remove|zero|0)\s+(?:the\s+)?(?:bath|baths|bathroom|bathrooms|toilet|washroom)/i.test(clean)) {
+      if (updated.rooms.bathrooms !== 0) {
+        updated.rooms.bathrooms = 0
+        changes.push('bathrooms removed')
+      }
+      decidedSet.add('bathrooms')
+    } else {
+      const bathCountMatch = clean.match(/(?:make it|change (?:it )?to|set (?:it )?to|i want|want|need|have)?\s*(\d+|one|single|two|three|four)\s*(?:bath|baths|bathroom|bathrooms|toilet|toilets|washroom)(?:\s+(?:only|instead))?/i)
+      if (bathCountMatch) {
+        const cnt = parseWordNumber(bathCountMatch[1])
+        if (cnt !== null) {
+          if (updated.rooms.bathrooms !== cnt) {
+            changes.push(`adjusted to ${cnt} bathroom${cnt !== 1 ? 's' : ''}`)
+          }
+          updated.rooms.bathrooms = cnt
+          decidedSet.add('bathrooms')
+        }
+      }
+    }
+
+    // C. Bedrooms
+    if (/(?:no|without|remove)\s+(?:the\s+)?(?:bed|beds|bedroom|bedrooms)/i.test(clean)) {
+      if (updated.rooms.bedrooms !== 0) {
+        updated.rooms.bedrooms = 0
+        changes.push('bedrooms removed')
+      }
+      decidedSet.add('bedrooms')
+    } else {
+      const bedCountMatch = clean.match(/(?:make it|change (?:it )?to|set (?:it )?to|i want|want|need|have)?\s*(\d+|one|single|two|three|four|five)\s*(?:bhk|bed|beds|bedroom|bedrooms)(?:\s+(?:only|instead))?/i)
+      if (bedCountMatch) {
+        const cnt = parseWordNumber(bedCountMatch[1])
+        if (cnt !== null) {
+          if (updated.rooms.bedrooms !== cnt) {
+            changes.push(`adjusted to ${cnt} bedroom${cnt !== 1 ? 's' : ''}`)
+          }
+          updated.rooms.bedrooms = cnt
+          decidedSet.add('bedrooms')
+        }
+      }
+    }
+
+    // D. Parking
+    if (/(?:remove|no|without|don't want|do not want|exclude|omit|drop|cancel)\s+(?:the\s+)?(?:car\s+)?(?:parking|garage|car porch|porch)/i.test(clean) ||
+        /(?:parking|garage)\s+(?:excluded|omitted|removed|not needed|not required|off)/i.test(clean) ||
+        clean === 'no parking') {
+      if (updated.rooms.parking !== 0) {
+        changes.push('parking excluded')
+      }
+      updated.rooms.parking = 0
+      decidedSet.add('parking')
+    } else if (/(?:add|include|included|with|plus|want)\s+(?:a\s+|an\s+)?(?:car\s+)?(?:parking|garage|porch)/i.test(clean) ||
+               /(?:parking|garage)\s+(?:included|added|wanted|on|yes)/i.test(clean)) {
+      if (updated.rooms.parking !== 1) {
+        changes.push('parking included')
+      }
+      updated.rooms.parking = 1
+      decidedSet.add('parking')
+    }
+
+    // E. Balcony
+    if (/(?:remove|no|without|don't want|do not want|exclude|omit|drop|cancel)\s+(?:the\s+)?(?:balcony|balconies|terrace)/i.test(clean) ||
+        /(?:balcony|terrace)\s+(?:excluded|omitted|removed|not needed|not required|off)/i.test(clean) ||
+        clean === 'no balcony') {
+      if (updated.rooms.balcony !== 0) {
+        changes.push('balcony removed')
+      }
+      updated.rooms.balcony = 0
+      decidedSet.add('balcony')
+    } else if (/(?:add|include|included|with|plus|want)\s+(?:a\s+|an\s+)?(?:balcony|balconies|terrace)/i.test(clean) ||
+               /(?:balcony|terrace)\s+(?:included|added|wanted|on|yes)/i.test(clean) ||
+               clean === 'included balcony' || clean === 'include balcony') {
+      if (updated.rooms.balcony !== 1) {
+        changes.push('balcony included')
+      }
+      updated.rooms.balcony = 1
+      decidedSet.add('balcony')
+    }
+
+    // F. Dining Room
+    if (/(?:remove|no|without|don't want|do not want|exclude|omit|drop)\s+(?:the\s+)?(?:dining|dining room|dining space)/i.test(clean) ||
+        /(?:dining|dining room)\s+(?:excluded|omitted|removed|not needed|not required)/i.test(clean) ||
+        clean === 'no dining' || clean === "i don't want a dining room") {
+      if (updated.rooms.dining_room !== 0) {
+        changes.push('dining room excluded')
+      }
+      updated.rooms.dining_room = 0
+      decidedSet.add('dining')
+    } else if (/(?:add|include|included|with|plus|want)\s+(?:a\s+|an\s+)?(?:dining|dining room|dining space)/i.test(clean) ||
+               /(?:dining|dining room)\s+(?:included|added|wanted)/i.test(clean)) {
+      if (updated.rooms.dining_room !== 1) {
+        changes.push('dining room included')
+      }
+      updated.rooms.dining_room = 1
+      decidedSet.add('dining')
+    }
+
+    // G. Kitchen & Living
+    if (/(?:remove|no|without|don't want)\s+(?:the\s+)?kitchen/i.test(clean)) {
+      updated.rooms.kitchen = 0
+      changes.push('kitchen removed')
+      decidedSet.add('kitchen')
+    }
+    if (/(?:remove|no|without|don't want)\s+(?:the\s+)?(?:living|hall)/i.test(clean)) {
+      updated.rooms.living_room = 0
+      changes.push('living room removed')
+      decidedSet.add('living')
+    }
+  }
+
+  // Assemble natural architectural reply
+  let aiReply = ''
+  if (!currentReq) {
+    aiReply = `I have recorded a ${updated.plot.width}×${updated.plot.length} FT plot with ${updated.rooms.bedrooms} bedroom${updated.rooms.bedrooms !== 1 ? 's' : ''}, ${updated.rooms.bathrooms} bathroom${updated.rooms.bathrooms !== 1 ? 's' : ''}, ${updated.rooms.kitchen} kitchen, and ${updated.rooms.living_room} living room.`
+  } else if (changes.length > 0) {
+    aiReply = `Updated: ${changes.join(', ')}. Current state: ${formatFinalSummary(updated)}.`
+  } else {
+    aiReply = `Understood. Current configuration: ${formatFinalSummary(updated)}.`
+  }
+
+  // Context-aware follow-up question (never repeat decided topics!)
+  const suggestions: string[] = []
+  if (!decidedSet.has('parking')) {
+    aiReply += ' Would you like to include car parking, or keep it excluded?'
+    suggestions.push('+ Add Parking', 'Exclude Parking')
+  } else if (!decidedSet.has('balcony')) {
+    aiReply += ' Would you like to include an exterior balcony or terrace?'
+    suggestions.push('+ Add Balcony', 'No Balcony')
+  } else if (!decidedSet.has('dining') && updated.rooms.dining_room === 0) {
+    aiReply += ' Would you like a dedicated dining space or an integrated layout?'
+    suggestions.push('+ Add Dining Room', 'No Dining')
+  } else {
+    aiReply += " All specifications are balanced and confirmed. Say 'done' or click below whenever you'd like to synthesize your blueprint."
+    suggestions.push('Done, Generate Plan', 'Review Parameters')
+  }
+
+  return {
+    updatedRequirements: updated,
+    aiReply,
+    suggestions,
+    isCompletion: false,
+    newDecidedTopics: Array.from(decidedSet),
+  }
 }
 
 const Generate: React.FC = () => {
@@ -196,13 +524,14 @@ const Generate: React.FC = () => {
   const [prompt, setPrompt] = useState<string>('')
   const [chatMessages, setChatMessages] = useState<ChatMessage[]>([])
   const [requirements, setRequirements] = useState<StructuredRequirements | null>(null)
+  const [decidedTopics, setDecidedTopics] = useState<string[]>([])
 
   // Plan generation state
   const [loading, setLoading] = useState<boolean>(false)
   const [planResult, setPlanResult] = useState<PlanGenerationResult | null>(null)
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
   const [svgZoom, setSvgZoom] = useState<number>(1)
-  const [show3DModal, setShow3DModal] = useState<boolean>(false)
+  const [viewMode, setViewMode] = useState<'2d' | '3d'>('2d')
 
   const textareaRef = useRef<HTMLTextAreaElement>(null)
   const chatEndRef = useRef<HTMLDivElement>(null)
@@ -216,6 +545,13 @@ const Generate: React.FC = () => {
     const userText = rawText.trim()
     const now = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
 
+    const {
+      updatedRequirements,
+      aiReply,
+      suggestions,
+      newDecidedTopics,
+    } = processConversationalInput(userText, requirements, decidedTopics)
+
     // User message
     const newMessages: ChatMessage[] = [
       ...chatMessages,
@@ -225,117 +561,71 @@ const Generate: React.FC = () => {
         text: userText,
         timestamp: now,
       },
+      {
+        id: Math.random().toString(),
+        sender: 'ai',
+        text: aiReply,
+        timestamp: now,
+        suggestions: suggestions.length > 0 ? suggestions : undefined,
+      },
     ]
 
-    // Extract requirements from user text and merge with existing requirements if any
-    const parsed = parseRequirementsFromText(userText)
-    const currentReq: StructuredRequirements = requirements
-      ? {
-          plot: {
-            width: userText.match(/\d+\s*(?:x|by|\*)\s*\d+/i) ? parsed.plot.width : requirements.plot.width,
-            length: userText.match(/\d+\s*(?:x|by|\*)\s*\d+/i) ? parsed.plot.length : requirements.plot.length,
-            height: 10,
-            unit: 'ft',
-          },
-          rooms: {
-            bedrooms: parsed.rooms.bedrooms || requirements.rooms.bedrooms,
-            bathrooms: parsed.rooms.bathrooms || requirements.rooms.bathrooms,
-            kitchen: parsed.rooms.kitchen || requirements.rooms.kitchen,
-            living_room: parsed.rooms.living_room || requirements.rooms.living_room,
-            dining_room: parsed.rooms.dining_room || requirements.rooms.dining_room,
-            parking: parsed.rooms.parking || requirements.rooms.parking,
-            balcony: parsed.rooms.balcony || requirements.rooms.balcony,
-            utility: parsed.rooms.utility || requirements.rooms.utility,
-            study_room: parsed.rooms.study_room || requirements.rooms.study_room,
-          },
-        }
-      : parsed
-
-    setRequirements(currentReq)
-    setPrompt('')
-
-    // Generate AI follow-up & missing requirements suggestions
-    const suggestions: string[] = []
-    const missingParts: string[] = []
-
-    if (currentReq.rooms.kitchen === 0) {
-      missingParts.push('kitchen')
-      suggestions.push('+ Add Kitchen')
-    }
-    if (currentReq.rooms.living_room === 0) {
-      missingParts.push('living room')
-      suggestions.push('+ Add Living Room')
-    }
-    if (currentReq.rooms.parking === 0) {
-      missingParts.push('parking space')
-      suggestions.push('+ Add Parking')
-    }
-    if (currentReq.rooms.dining_room === 0) {
-      suggestions.push('+ Add Dining Room')
-    }
-    if (currentReq.rooms.balcony === 0) {
-      suggestions.push('+ Add Balcony')
-    }
-
-    let aiResponseText = `I have recorded a ${currentReq.plot.width}×${currentReq.plot.length} FT plot with ${currentReq.rooms.bedrooms} Bedroom${currentReq.rooms.bedrooms > 1 ? 's' : ''} and ${currentReq.rooms.bathrooms} Bathroom${currentReq.rooms.bathrooms > 1 ? 's' : ''}.`
-
-    if (missingParts.length > 0) {
-      aiResponseText += ` Would you like to include a ${missingParts.join(' and ')}? You can click the quick options below or reply in chat.`
-    } else {
-      aiResponseText += ` All essential spaces are covered! You can proceed to confirm your requirements or adjust options.`
-    }
-
-    newMessages.push({
-      id: Math.random().toString(),
-      sender: 'ai',
-      text: aiResponseText,
-      timestamp: now,
-      suggestions: suggestions.length > 0 ? suggestions : undefined,
-    })
-
+    setRequirements(updatedRequirements)
+    setDecidedTopics(newDecidedTopics)
     setChatMessages(newMessages)
+    setPrompt('')
     setTimeout(() => chatEndRef.current?.scrollIntoView({ behavior: 'smooth' }), 100)
   }
 
   // Quick suggestion click
   const handleSelectSuggestion = (suggestion: string) => {
-    if (!requirements) return
+    if (suggestion === 'Done, Generate Plan' || suggestion === '⚡ Generate Floor Plan') {
+      if (requirements) {
+        handleExecuteGeneration()
+      } else {
+        handleProceedToConfirm()
+      }
+      return
+    }
 
-    const updated = { ...requirements, rooms: { ...requirements.rooms } }
+    if (suggestion === 'Review Parameters' || suggestion === 'Edit Requirements') {
+      handleProceedToConfirm()
+      return
+    }
 
-    if (suggestion === '+ Add Kitchen') updated.rooms.kitchen = 1
-    else if (suggestion === '+ Add Living Room') updated.rooms.living_room = 1
-    else if (suggestion === '+ Add Parking') updated.rooms.parking = 1
-    else if (suggestion === '+ Add Dining Room') updated.rooms.dining_room = 1
-    else if (suggestion === '+ Add Balcony') updated.rooms.balcony = 1
+    if (suggestion === 'Keep Everything') {
+      handleSendPrompt('keep everything else the same')
+      return
+    }
 
-    setRequirements(updated)
+    if (suggestion === 'Exclude Parking' || suggestion === 'Remove Parking') {
+      handleSendPrompt('remove parking')
+      return
+    }
 
-    const now = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-    const newMessages: ChatMessage[] = [
-      ...chatMessages,
-      {
-        id: Math.random().toString(),
-        sender: 'user',
-        text: `Included ${suggestion.replace('+ Add ', '')}.`,
-        timestamp: now,
-      },
-      {
-        id: Math.random().toString(),
-        sender: 'ai',
-        text: `Updated requirements with ${suggestion.replace('+ Add ', '')}. Ready to review and generate!`,
-        timestamp: now,
-      },
-    ]
-    setChatMessages(newMessages)
-    setTimeout(() => chatEndRef.current?.scrollIntoView({ behavior: 'smooth' }), 100)
+    if (suggestion === 'No Balcony') {
+      handleSendPrompt('no balcony')
+      return
+    }
+
+    if (suggestion === 'Make it 1 Bathroom') {
+      handleSendPrompt('make it 1 bathroom')
+      return
+    }
+
+    if (suggestion.startsWith('+ Add ')) {
+      const item = suggestion.replace('+ Add ', '').toLowerCase()
+      handleSendPrompt(`add ${item}`)
+      return
+    }
+
+    handleSendPrompt(suggestion)
   }
 
   // Transition from Chat to Confirmation screen
   const handleProceedToConfirm = () => {
     if (!requirements) {
-      // If user clicks review with empty chat, use default fallback
-      const def = parseRequirementsFromText(prompt || '30x40 ft house with 2 bedrooms and 2 bathrooms')
+      const def = parseInitialRequirements(prompt || '30x40 ft house with 2 bedrooms and 2 bathrooms')
       setRequirements(def)
     }
     setWorkflowStep('confirm')
@@ -343,12 +633,16 @@ const Generate: React.FC = () => {
 
   // Execute Generate Floor Plan API call
   const handleExecuteGeneration = async () => {
-    if (!requirements) return
+    const targetReq = requirements || parseInitialRequirements('30x40 ft house with 2 bedrooms and 2 bathrooms')
+    if (!requirements) {
+      setRequirements(targetReq)
+    }
 
-    const finalPrompt = compilePromptFromRequirements(requirements)
+    const finalPrompt = compilePromptFromRequirements(targetReq)
     setLoading(true)
     setErrorMessage(null)
     setWorkflowStep('generated')
+    setViewMode('2d')
 
     try {
       const response = await fetch(`${backendUrl}/generate-plan`, {
@@ -356,7 +650,7 @@ const Generate: React.FC = () => {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ prompt: finalPrompt }),
+        body: JSON.stringify({ prompt: finalPrompt, requirements: targetReq }),
       })
 
       if (!response.ok) {
@@ -366,6 +660,18 @@ const Generate: React.FC = () => {
 
       const data: PlanGenerationResult = await response.json()
       setPlanResult(data)
+
+      const confirmationText = data.confirmation_summary || `Plan generated using your final requirements: ${formatFinalSummary(targetReq)}.`
+      const now = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+      setChatMessages((prev) => [
+        ...prev,
+        {
+          id: Math.random().toString(),
+          sender: 'ai',
+          text: `✓ ${confirmationText}`,
+          timestamp: now,
+        },
+      ])
     } catch (err: any) {
       console.error('Generation failed:', err)
       setErrorMessage(
@@ -381,8 +687,10 @@ const Generate: React.FC = () => {
     setPrompt('')
     setChatMessages([])
     setRequirements(null)
+    setDecidedTopics([])
     setPlanResult(null)
     setErrorMessage(null)
+    setViewMode('2d')
   }
 
   const handleLogout = () => {
@@ -1029,12 +1337,14 @@ const Generate: React.FC = () => {
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <span style={{ fontSize: '12px', color: '#f5f5f2' }}>Car Parking / Porch</span>
                     <button
-                      onClick={() =>
-                        setRequirements({
+                      onClick={() => {
+                        const updated = {
                           ...requirements,
                           rooms: { ...requirements.rooms, parking: requirements.rooms.parking > 0 ? 0 : 1 },
-                        })
-                      }
+                        }
+                        setRequirements(updated)
+                        setDecidedTopics((prev) => Array.from(new Set([...prev, 'parking'])))
+                      }}
                       style={{
                         background: requirements.rooms.parking > 0 ? 'rgba(16, 185, 129, 0.15)' : 'rgba(255,255,255,0.04)',
                         border: `1px solid ${requirements.rooms.parking > 0 ? '#10B981' : 'rgba(255,255,255,0.15)'}`,
@@ -1047,6 +1357,33 @@ const Generate: React.FC = () => {
                       }}
                     >
                       {requirements.rooms.parking > 0 ? '✓ INCLUDED' : 'OMIT'}
+                    </button>
+                  </div>
+
+                  {/* BALCONY TOGGLE */}
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <span style={{ fontSize: '12px', color: '#f5f5f2' }}>Balcony / Terrace</span>
+                    <button
+                      onClick={() => {
+                        const updated = {
+                          ...requirements,
+                          rooms: { ...requirements.rooms, balcony: requirements.rooms.balcony > 0 ? 0 : 1 },
+                        }
+                        setRequirements(updated)
+                        setDecidedTopics((prev) => Array.from(new Set([...prev, 'balcony'])))
+                      }}
+                      style={{
+                        background: requirements.rooms.balcony > 0 ? 'rgba(16, 185, 129, 0.15)' : 'rgba(255,255,255,0.04)',
+                        border: `1px solid ${requirements.rooms.balcony > 0 ? '#10B981' : 'rgba(255,255,255,0.15)'}`,
+                        color: requirements.rooms.balcony > 0 ? '#10B981' : 'rgba(255,255,255,0.4)',
+                        padding: '4px 10px',
+                        borderRadius: '3px',
+                        fontSize: '10px',
+                        fontFamily: 'DM Mono',
+                        cursor: 'pointer',
+                      }}
+                    >
+                      {requirements.rooms.balcony > 0 ? '✓ INCLUDED' : 'OMIT'}
                     </button>
                   </div>
                 </div>
@@ -1133,11 +1470,11 @@ const Generate: React.FC = () => {
                 <div className="sidebar-data-item">
                   <label>PLOT / ENVELOPE</label>
                   <span>
-                    {planResult?.layout?.plot?.width || requirements?.plot.width || 30} ×{' '}
-                    {planResult?.layout?.plot?.length || requirements?.plot.length || 40} FT (
+                    {requirements?.plot.width || planResult?.layout?.plot?.width || 30} ×{' '}
+                    {requirements?.plot.length || planResult?.layout?.plot?.length || 40} FT (
                     {(
-                      (planResult?.layout?.plot?.width || requirements?.plot.width || 30) *
-                      (planResult?.layout?.plot?.length || requirements?.plot.length || 40)
+                      (requirements?.plot.width || planResult?.layout?.plot?.width || 30) *
+                      (requirements?.plot.length || planResult?.layout?.plot?.length || 40)
                     ).toLocaleString()}{' '}
                     SQ.FT.)
                   </span>
@@ -1146,16 +1483,18 @@ const Generate: React.FC = () => {
                 <div className="sidebar-data-item">
                   <label>ROOM PROGRAM</label>
                   <span>
-                    {planResult?.layout?.rooms?.filter((r) => r.type === 'bedroom').length || requirements?.rooms.bedrooms || 2} BED ·{' '}
-                    {planResult?.layout?.rooms?.filter((r) => r.type === 'bathroom').length || requirements?.rooms.bathrooms || 2} BATH ·{' '}
-                    {planResult?.layout?.rooms?.some((r) => r.type === 'parking') ? 'PARKING' : 'NO PKG'}
+                    {requirements ? requirements.rooms.bedrooms : (planResult?.layout?.rooms?.filter((r) => r.type === 'bedroom').length || 2)} BED ·{' '}
+                    {requirements ? requirements.rooms.bathrooms : (planResult?.layout?.rooms?.filter((r) => r.type === 'bathroom').length || 1)} BATH ·{' '}
+                    {requirements ? (requirements.rooms.parking > 0 ? 'PARKING' : 'NO PKG') : (planResult?.layout?.rooms?.some((r) => r.type === 'parking') ? 'PARKING' : 'NO PKG')}
+                    {requirements?.rooms.balcony ? ' · BALCONY' : ''}
+                    {requirements?.rooms.dining_room ? ' · DINING' : ''}
                   </span>
                 </div>
 
                 <div className="sidebar-data-item">
                   <label>ACTIVE PROMPT</label>
                   <span style={{ fontSize: '10px', color: 'rgba(255,255,255,0.7)', textTransform: 'none', wordBreak: 'break-word' }}>
-                    "{planResult?.prompt || (requirements ? compilePromptFromRequirements(requirements) : '')}"
+                    "{requirements ? compilePromptFromRequirements(requirements) : (planResult?.prompt || '')}"
                   </span>
                 </div>
               </div>
@@ -1205,30 +1544,50 @@ const Generate: React.FC = () => {
             <div>
               <span className="input-label" style={{ display: 'block', marginBottom: '4px', color: '#7de7ff' }}>
                 {workflowStep === 'generated'
-                  ? 'SPATIAL AI OUTPUT // T5-SMALL CONSTRAINT VERIFIED'
+                  ? viewMode === '3d'
+                    ? 'INTERACTIVE THREE.JS 3D VIEW // REAL-TIME RENDERING'
+                    : 'SPATIAL AI OUTPUT // T5-SMALL CONSTRAINT VERIFIED'
                   : 'PLANORA SPATIAL WORKSPACE'}
               </span>
-              <h1>{workflowStep === 'generated' ? 'GENERATED FLOOR PLAN' : 'ARCHITECTURAL DESIGN BLUEPRINT'}</h1>
+              <h1>
+                {workflowStep === 'generated'
+                  ? viewMode === '3d'
+                    ? '3D ARCHITECTURAL MODEL'
+                    : 'GENERATED FLOOR PLAN'
+                  : 'ARCHITECTURAL DESIGN BLUEPRINT'}
+              </h1>
             </div>
 
             {workflowStep === 'generated' && (
               <div className="workspace-actions">
-                <button className="technical-btn" onClick={() => setWorkflowStep('confirm')}>
-                  EDIT PLAN
-                </button>
-                <button className="technical-btn" onClick={handleExecuteGeneration}>
-                  REGENERATE
-                </button>
-                <button className="technical-btn" onClick={handleDownloadSVG} disabled={!planResult?.svg}>
-                  EXPORT SVG
-                </button>
-                <button
-                  className="technical-btn"
-                  style={{ borderColor: '#7de7ff', color: '#7de7ff' }}
-                  onClick={() => setShow3DModal(true)}
-                >
-                  RENDER 3D VIEW
-                </button>
+                {viewMode === '3d' ? (
+                  <button
+                    className="technical-btn"
+                    style={{ borderColor: '#7de7ff', color: '#7de7ff', fontWeight: 700 }}
+                    onClick={() => setViewMode('2d')}
+                  >
+                    ← BACK TO 2D
+                  </button>
+                ) : (
+                  <>
+                    <button className="technical-btn" onClick={() => setWorkflowStep('confirm')}>
+                      EDIT PLAN
+                    </button>
+                    <button className="technical-btn" onClick={handleExecuteGeneration}>
+                      REGENERATE
+                    </button>
+                    <button className="technical-btn" onClick={handleDownloadSVG} disabled={!planResult?.svg}>
+                      EXPORT SVG
+                    </button>
+                    <button
+                      className="technical-btn"
+                      style={{ borderColor: '#7de7ff', color: '#7de7ff', fontWeight: 700 }}
+                      onClick={() => setViewMode('3d')}
+                    >
+                      RENDER 3D VIEW
+                    </button>
+                  </>
+                )}
               </div>
             )}
           </header>
@@ -1244,9 +1603,33 @@ const Generate: React.FC = () => {
                 color: '#FCA5A5',
                 fontFamily: 'DM Mono',
                 fontSize: '11px',
+                marginBottom: '14px',
               }}
             >
               ⚠️ {errorMessage}
+            </div>
+          )}
+
+          {/* CONFIRMATION SUMMARY ALERT */}
+          {planResult?.confirmation_summary && (
+            <div
+              style={{
+                border: '1px solid rgba(16, 185, 129, 0.4)',
+                background: 'rgba(16, 185, 129, 0.08)',
+                padding: '12px 18px',
+                borderRadius: '4px',
+                color: '#6EE7B7',
+                fontFamily: 'DM Mono',
+                fontSize: '11px',
+                marginBottom: '14px',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '10px',
+                lineHeight: '1.5',
+              }}
+            >
+              <span style={{ color: '#10B981', fontWeight: 'bold' }}>✓</span>
+              <span>{planResult.confirmation_summary}</span>
             </div>
           )}
 
@@ -1254,8 +1637,8 @@ const Generate: React.FC = () => {
           <section className="workspace-canvas" style={{ minHeight: '620px', position: 'relative', display: 'flex', flexDirection: 'column' }}>
             <div className="canvas-blueprint-grid" />
 
-            {/* ZOOM CONTROLS */}
-            {planResult?.svg && !loading && (
+            {/* ZOOM CONTROLS (ONLY IN 2D VIEW) */}
+            {planResult?.svg && !loading && viewMode === '2d' && (
               <div
                 style={{
                   position: 'absolute',
@@ -1316,8 +1699,18 @@ const Generate: React.FC = () => {
               </div>
             )}
 
-            {/* RENDERED SVG FLOOR PLAN */}
-            {!loading && planResult?.svg && workflowStep === 'generated' && (
+            {/* 3D INTERACTIVE THREE.JS VIEW */}
+            {!loading && planResult?.layout && workflowStep === 'generated' && viewMode === '3d' && (
+              <div style={{ width: '100%', height: '100%', flex: 1, position: 'relative', zIndex: 2 }}>
+                <FloorPlan3DViewer
+                  layout={planResult.layout}
+                  onBackTo2D={() => setViewMode('2d')}
+                />
+              </div>
+            )}
+
+            {/* RENDERED 2D SVG FLOOR PLAN */}
+            {!loading && planResult?.svg && workflowStep === 'generated' && viewMode === '2d' && (
               <div
                 style={{
                   width: '100%',
@@ -1482,80 +1875,9 @@ const Generate: React.FC = () => {
           )}
         </main>
       </div>
-
-      {/* THREE.JS 3D SCENE SPECIFICATION MODAL */}
-      {show3DModal && (
-        <div
-          style={{
-            position: 'fixed',
-            inset: 0,
-            background: 'rgba(3, 5, 6, 0.85)',
-            backdropFilter: 'blur(8px)',
-            zIndex: 100,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            padding: '20px',
-          }}
-          onClick={() => setShow3DModal(false)}
-        >
-          <div
-            style={{
-              width: '700px',
-              maxWidth: '90vw',
-              background: '#0B111E',
-              border: '1px solid rgba(125, 231, 255, 0.3)',
-              borderRadius: '8px',
-              padding: '30px',
-              boxShadow: '0 0 40px rgba(0,0,0,0.8)',
-            }}
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px' }}>
-              <div>
-                <span style={{ fontSize: '9px', fontFamily: 'DM Mono', color: '#7de7ff' }}>PHASE 10 // THREE.JS COMPATIBILITY</span>
-                <h3 style={{ margin: '4px 0 0 0', fontSize: '18px', fontWeight: '800' }}>STRUCTURED 3D COORDINATE PAYLOAD</h3>
-              </div>
-              <button className="technical-btn" onClick={() => setShow3DModal(false)}>
-                CLOSE
-              </button>
-            </div>
-            <p style={{ fontSize: '12px', color: 'rgba(255,255,255,0.6)', lineHeight: '1.5', margin: '0 0 15px 0' }}>
-              This validated layout JSON is formatted for direct ingestion by Three.js primitives (walls, floor meshes, door openings, and furniture).
-            </p>
-            <pre
-              style={{
-                background: '#05080E',
-                border: '1px solid rgba(255,255,255,0.08)',
-                padding: '16px',
-                borderRadius: '4px',
-                fontSize: '11px',
-                fontFamily: 'DM Mono, monospace',
-                color: '#7de7ff',
-                maxHeight: '320px',
-                overflowY: 'auto',
-              }}
-            >
-              {JSON.stringify(
-                {
-                  scene: {
-                    plot: planResult?.layout?.plot,
-                    rooms: planResult?.layout?.rooms,
-                    doors: planResult?.layout?.doors,
-                    windows: planResult?.layout?.windows,
-                    wall_height: 10.0,
-                    wall_thickness: 0.5,
-                  },
-                },
-                null,
-                2
-              )}
-            </pre>
-          </div>
-        </div>
-      )}
     </div>
   )
 }
+
 
 export default Generate
